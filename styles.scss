@@ -82,6 +82,97 @@ body {
             font-size: 3rem;
         }
 
+        button {
+            font-size: 2rem;
+            margin: 1rem;
+            padding: 1rem;
+            color: white;
+            background-color: green;
+            &:hover {
+                background-color: blue;
+            }
+        }
+
+        .productos {
+            //border: 1px solid yellow;
+            width: 90%;
+            @include centrarConFlex(0);
+            justify-content: space-evenly;
+            flex-wrap: wrap;
+
+            .productos__individual {
+                margin: 1rem;
+                @include centrarConFlex(1);
+                justify-content: space-between;
+                border: 3px solid $gris;
+                // border-radius: 30px;
+                font-size: 1.8rem;
+
+                width: 300px;
+                height: 500px;
+
+                .superior {
+                    @include centrarConFlex(0);
+                    width: 100%;
+                    justify-content: space-between;
+                    background: $amarillo;
+                    padding: 0.25rem;
+                    .identificador {
+                        @include centrarConFlex(0);
+                    }
+
+                    .botones {
+                        display: flex;
+                        justify-content: right;
+                        i {
+                            margin: 4px;
+                            font-size: 1.5rem;
+                        }
+                    }
+                }
+
+                .principal {
+                    @include centrarConFlex(1);
+                    padding: 1rem 0;
+                    justify-content: space-between;
+                    height: 100%;
+                    width: 100%;
+                    .titulo {
+                        font-size: 1.5rem;
+                    }
+                    img {
+                        width: 70%;
+                        mix-blend-mode: multiply;
+                    }
+
+                    .precio::after {
+                        content: "$";
+                    }
+                }
+
+                .abajo {
+                    width: 100%;
+
+                    .estado {
+                        @include centrarConFlex(0);
+                        width: 100%;
+                        height: 100%;
+                        text-align: center;
+                        padding: 1rem;
+                        color: white;
+                        font-size: 2rem;
+                    }
+                    .activo {
+                        background-color: green;
+                    }
+
+                    .inactivo {
+                        background-color: red;
+                    }
+                }
+            }
+        }
+
     }
 
     footer {

@@ -47,6 +47,102 @@ body main {
 body main i {
   font-size: 3rem;
 }
+body main button {
+  font-size: 2rem;
+  margin: 1rem;
+  padding: 1rem;
+  color: white;
+  background-color: green;
+}
+body main button:hover {
+  background-color: blue;
+}
+body main .productos {
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+body main .productos .productos__individual {
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
+  border: 3px solid #666666;
+  font-size: 1.8rem;
+  width: 300px;
+  height: 500px;
+}
+body main .productos .productos__individual .superior {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  background: #fff159;
+  padding: 0.25rem;
+}
+body main .productos .productos__individual .superior .identificador {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+body main .productos .productos__individual .superior .botones {
+  display: flex;
+  justify-content: right;
+}
+body main .productos .productos__individual .superior .botones i {
+  margin: 4px;
+  font-size: 1.5rem;
+}
+body main .productos .productos__individual .principal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+}
+body main .productos .productos__individual .principal .titulo {
+  font-size: 1.5rem;
+}
+body main .productos .productos__individual .principal img {
+  width: 70%;
+  mix-blend-mode: multiply;
+}
+body main .productos .productos__individual .principal .precio::after {
+  content: "$";
+}
+body main .productos .productos__individual .abajo {
+  width: 100%;
+}
+body main .productos .productos__individual .abajo .estado {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  padding: 1rem;
+  color: white;
+  font-size: 2rem;
+}
+body main .productos .productos__individual .abajo .activo {
+  background-color: green;
+}
+body main .productos .productos__individual .abajo .inactivo {
+  background-color: red;
+}
 body footer {
   padding: 2rem;
   grid-area: footer;
