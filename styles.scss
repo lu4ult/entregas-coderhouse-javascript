@@ -104,6 +104,8 @@ body {
                 margin: 1rem;
                 @include centrarConFlex(1);
                 justify-content: space-between;
+                background: #fefefe;
+                box-shadow: 5px 5px 15px #333;
                 border: 3px solid $gris;
                 // border-radius: 30px;
                 font-size: 1.8rem;
