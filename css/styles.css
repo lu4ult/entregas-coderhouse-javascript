@@ -95,6 +95,7 @@ body main .productos .productos__individual .superior .identificador {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  font-size: 1.5rem;
 }
 body main .productos .productos__individual .superior .botones {
   display: flex;
