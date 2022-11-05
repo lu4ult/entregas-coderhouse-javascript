@@ -1,76 +1,18 @@
 /*
-Ingresamos los precios de 3 productos, los vamos almacenando en sus variables correspondientes y analizamos cuál es el menor y el mayor de ellos.
-
+Aquí tenemos un array de objetos donde cada objeto tendrá su id, precio, título, etc.
+La idea es hacer una especie de carrito para mostrar al usuario cuáles están activos o pausados, y calcular cuántos puede comprar en función de un presupuesto.
 */
-
-let cantidadDeProductos = 3;
-
-let precio1,precio2,precio3;                                                //To-Do: reemplazar por arryas cuando los aprendamos.
-let mayorPrecio,menorPrecio;
-
-
-
-function obtenerElMayor(primero,segundo,tercero) {
-    let mayorDeTodos = primero;
-    if(segundo > mayorDeTodos)
-        mayorDeTodos = segundo;
-    if(tercero > mayorDeTodos)
-        mayorDeTodos = tercero;
-
-    return mayorDeTodos;
-}
-
-
-const iniciar = () => {
-    for(let i=1;i<=cantidadDeProductos;i++) {
-        let entradaUsuario;
-        do {                                                                    //Validamos que no ingrese 0 como precio.
-            entradaUsuario = parseInt(prompt("Ingrese el precio del producto "+i+" de "+cantidadDeProductos));
-            if(entradaUsuario <= 0)
-                alert("😕😕😕😕\nNo puedo aceptar productos sin precio!\nIntentemos otra vez...");
-        } while(entradaUsuario <= 0);
-
-       switch(i) {
-            case 1: {
-                precio1 = entradaUsuario;
-                // mayorPrecio = entradaUsuario;                                   //Tenemos que asignarles valores la primera vez que se ingresa un dato sino quedan como "undefined"
-                menorPrecio = entradaUsuario;
-                break;
-            }
-            case 2: {
-                precio2 = entradaUsuario;
-                break;
-            }
-            case 3: {
-                precio3 = entradaUsuario;
-                break;
-            }
-            default:
-                alert("Ups! Algo salió mal...")
-        }
-
-        if(entradaUsuario < menorPrecio)
-            menorPrecio = entradaUsuario;
-
-        // if(entradaUsuario > mayorPrecio)
-        //     mayorPrecio = entradaUsuario;
-        }
-
-    console.log("Los precios ingresados son:\n" + precio1 + " $\n" + precio2 + " $\n" + precio3 + " $");
-    console.log(" El menor de ellos es: " + menorPrecio + " $\n\t\tY el mayor es: " + obtenerElMayor(precio1,precio2,precio3) + " $\n");
-}
-
 
 class Producto {
     constructor(idMeli,titulo,precio,estado) {
-        this.idMeli = idMeli.replace("-","");                                   /*Como identificador del producto usaremos directamente el identificador de la publicación que nos da Mercadolibre.*/
+        this.idMeli = idMeli.replace("-","");                                                       //Como identificador del producto usaremos directamente el identificador de la publicación que nos da Mercadolibre.
         this.titulo = titulo.toLowerCase();
         this.precio = precio;
         this.estado = estado;
         this.fecha = new Date();
     }
 
-    //método:
+    //método:                                                                                       //A implementar en un futuro
     // vender(cantidad) {
     //     this.stock = this.stock + cantidad;
     // }
@@ -82,8 +24,13 @@ class Producto {
     // }
 }
 
-let productos =[new Producto("MLA-900797325","Bitcoin Ticker",6799,true),
-                new Producto("MLA-818528606","RAI",9137,false)];
+
+//Agregamos de entrada algunos productos para que haya algo de contenido.
+let productos =[ new Producto("MLA-15998080","TV smart",559999,true),
+                new Producto("MLA-818528606","RAI",10429,false),
+                new Producto("MLA-900797325","Bitcoin Ticker",6869,true),
+                new Producto("MMLA-1117926574","Timbre Programable",30000,true)
+                ];
 
 
 function agregarProductos() {
@@ -94,7 +41,7 @@ function agregarProductos() {
     //let productoNuevo = new Producto("MLA",nombre,precio,true);
     productos.push(new Producto("MLA-12345678",nombre,precio,true));
 
-    mostrarProductos(productos);                                                                                                     //Mostramos los productos luego de agregar alguno.
+    mostrarProductos(productos,true);                                                                //Mostramos los productos luego de agregar alguno.
 }
 
 
@@ -103,10 +50,15 @@ function obtenerFechaFormateada(fecha) {
     return fecha.getDay()+"/"+fecha.getMonth()+"/"+fecha.getFullYear();
 }
 
+//Recibimos el array y si debe limpiar la consola o no
+function mostrarProductos(arreglo, clearScreen) {
+    if(clearScreen === true) {
+        console.clear();
+        console.log("%cProductos:","font-size:1rem;color:blue;");
+    }
 
-function mostrarProductos (arreglo) {
     for(let elemento of arreglo) {
-        console.log(elemento.idMeli + ": "+elemento.titulo +" - "+obtenerFechaFormateada(elemento.fecha));
+        console.log(elemento.idMeli + ": " + elemento.titulo + " - " + elemento.precio + "$ - " + obtenerFechaFormateada(elemento.fecha));
     }
 }
 
@@ -115,22 +67,69 @@ function buscarProductosPorNombre() {
     let encontrados = productos.filter(el => el.titulo.includes(tituloBuscado));
     if(encontrados.length >= 1) {
         console.log("Encontrados:");
-        mostrarProductos(encontrados);
+        mostrarProductos(encontrados,true);
     }
     else
         console.log("Ups! No encontré nada...")
 }
 
 
-// function buscarProductosPorPresupuesto() {
-//     let presupuestoUsuario = parseInt(prompt("Cuál es su presupuesto?"));
-//     let productosOrdenadosPorPrecio = productos.sort(a.precio,b => a + b);
-//     mostrarProductos(productos);
-//     mostrarProductos(productosOrdenadosPorPrecio);
-// }
+function listarProductosPorPresupuesto() {
+    let presupuestoUsuario = parseInt(prompt("Cuál es su presupuesto?"));
+    //let presupuestoUsuario = 11000;
+    productos.sort((a,b) => a.precio - b.precio);                                                   //Fuente: https://stackoverflow.com/questions/1129216
+    console.clear();
+    console.log("%cProductos ordenados de menor a mayor precio:","font-size:1rem;color:blue;");
+    mostrarProductos(productos,false);
 
-//let encontrados = productos.filter(el => el.precio >60000);
+    console.log("----------");
 
-mostrarProductos(productos);
+    /*
+    Ahora analizamos cuántos productos podría comprar el usuario según su presupuesto.
+    Existen tres escenarios:
+    1: el presupuesto no alcanza para ningún producto
+    2: el presupuesto alcanza para todos los productos.
+    3: el presupuesto alcanza para algunos de los productos
+    */
+
+    //Escenario 1:
+    if(presupuestoUsuario < productos[0].precio) {                                                  //Comparamos contra el primer elemento del array ya que ya se ordenó.
+        console.clear();
+        console.log("Ups! no alcanza para ninguno!");
+        console.log("Necesita "+ (productos[0].precio - presupuestoUsuario) + "$ para comprar al menos " + productos[0].titulo);
+    }
+    else {
+        //Escenario 2:
+        let sumatoriaTotal = 0;                                                                     //Calculamos el costo del carrito entero.
+        for(let el of productos) {
+            sumatoriaTotal += el.precio;
+        }
+        if(sumatoriaTotal <= presupuestoUsuario) {
+            console.log("Felicidades! Le alcanza para comprar todo!");
+        }
+
+        //Escenario 3;
+        else {
+            //console.log("escenario 3");
+            let indice = 0;
+            let costoParcialCarrito = 0;
+            let mensajeParaUsuario = "";
+
+            do {                                                                                    //Hacemos un do-while en lugar de while ya que alcana para almenos el primer producto (escenario 1).
+                costoParcialCarrito += productos[indice].precio;
+                //console.log("costo carrito: "+costoParcialCarrito);
+                mensajeParaUsuario += "\n*\t"+productos[indice].titulo;
+
+                indice++;
+            }while((costoParcialCarrito + productos[indice].precio) <= presupuestoUsuario);         //Mientras que el costo del carrito sumado al siguiente producto sea menor al presupuesto.
+        console.log("Su presupuesto alcanza para:" + mensajeParaUsuario + "\nY sobran " + (presupuestoUsuario - costoParcialCarrito) + " $");
+        }
+    }
+}
+
+/**************************************************************************************************/
 
 
+console.clear();
+console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
+mostrarProductos(productos,false);                                                                  //Al cargar por primera vez mostramos los productos cargados al array de objetos.
