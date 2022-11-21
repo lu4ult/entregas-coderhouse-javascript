@@ -3,12 +3,12 @@ let editSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><pa
 let deleteSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M175 175C184.4 165.7 199.6 165.7 208.1 175L255.1 222.1L303 175C312.4 165.7 327.6 165.7 336.1 175C346.3 184.4 346.3 199.6 336.1 208.1L289.9 255.1L336.1 303C346.3 312.4 346.3 327.6 336.1 336.1C327.6 346.3 312.4 346.3 303 336.1L255.1 289.9L208.1 336.1C199.6 346.3 184.4 346.3 175 336.1C165.7 327.6 165.7 312.4 175 303L222.1 255.1L175 208.1C165.7 199.6 165.7 184.4 175 175V175zM512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48z"/></svg>'
 
 class Producto {
-    constructor(idMeli,titulo,precio,estado) {
-        this.idMeli = idMeli.replace("-","");                                                       //Como identificador del producto usaremos directamente el identificador de la publicación que nos da Mercadolibre.
+    constructor(idMeli,titulo,precio,estado, fecha) {
+        this.idMeli = idMeli;                                                                      //Como identificador del producto usaremos directamente el identificador de la publicación que nos da Mercadolibre.
         this.titulo = titulo.toLowerCase();
         this.precio = precio;
         this.estado = estado;
-        this.fecha = new Date();
+        this.fecha = fecha;
     }
 
     //método:                                                                                       //A implementar en un futuro
@@ -23,33 +23,57 @@ class Producto {
     // }
 }
 
-
-//Agregamos de entrada algunos productos para que haya algo de contenido.
-// let productos =[ new Producto("MLA1120052195","Cable",559999,true),
-//                 new Producto("MLA818528606","RAI",10429,false),
-//                 new Producto("MLA900797325","Bitcoin Ticker",6869,false),
-//                 new Producto("MLA1154142031","Juguete gatos",65,false),
-//                 new Producto("MLA1117926574","Timbre Programable",30000,true)
-//                 ];
-
-let productos = [];
-
-let dataLocal = localStorage.getItem("tenes-stock");
-
-if(dataLocal === null) {
-    //primer inicio
-    let cargarle = [new Producto("MLA818528606","RAI",10429,false, new Date())];
-    localStorage.setItem("tenes-stock",JSON.stringify(cargarle));
+class Notificacion {
+    constructor(fecha,descripcion) {
+        this.fecha = fecha;
+        this.descripcion = descripcion;
+    }
 }
 
-let dataLeida = JSON.parse(localStorage.getItem("tenes-stock"));
-//console.log(dataLeida)
-dataLeida.forEach(e => {
-    productos.push(new Producto(e.idMeli,e.titulo,e.precio,e.estado,e.fecha))
-    console.log(e)
+
+//Agregamos de entrada algunos productos para que haya algo de contenido.
+let productosBase =[ new Producto("MLA-1120052195","Cable",559999,true, new Date()),
+                new Producto("MLA-818528606","RAI",10429,false, new Date()),
+                new Producto("MLA-900797325","Bitcoin Ticker",6869,false, new Date()),
+                new Producto("MLA-1154142031","Juguete gatos",65,false, new Date()),
+                new Producto("MLA-906312866","proyector",40000,true, new Date()),
+                new Producto("MLA-879189343","gazebo",44000,false, new Date()),
+                new Producto("MLA-1117926574","Timbre Programable",30000,true, new Date())
+                ];
+
+let productos = [];
+let notificaciones = [];
+
+let dataLocal = localStorage.getItem("tenes-stock_productos");
+
+//Si es la primera vez que carga la página le cargamos algunos productos aleatorios.
+if(dataLocal === null) {
+    console.log("Creando data local random")
+    productosBase = productosBase.sort((a,b) => 0.5 - Math.random());
+    let cantidadRandom =  Math.floor(3 + Math.random() * (productosBase.length -2));
+    let arrayRandomGenerado = [];
+    do {
+        arrayRandomGenerado.push(productosBase.pop());
+        cantidadRandom--;
+    }while(cantidadRandom);
+
+    //notificaciones.push();
+    localStorage.setItem("tenes-stock_productos",JSON.stringify(arrayRandomGenerado));
+    localStorage.setItem("tenes-stock_notificaciones",JSON.stringify([new Notificacion(new Date(),"Hola! Bienvenido")]));
+}
+
+
+let productosLeidosLocal = JSON.parse(localStorage.getItem("tenes-stock_productos"));
+productosLeidosLocal.forEach(e => {
+    productos.push(new Producto(e.idMeli,e.titulo,e.precio,e.estado,new Date(e.fecha)));
 });
 
-//productos = JSON.parse(localStorage.getItem("tenes-stock"));
+let notificacionesLeidasLocal = JSON.parse(localStorage.getItem("tenes-stock_notificaciones"));
+notificacionesLeidasLocal.forEach(e => {
+    notificaciones.push(new Notificacion(new Date(e.fecha),e.descripcion));
+});
+
+
 
 // function agregarProductos() {
 //     let nombre = prompt("Cuál es el nombre del producto "+String(productos.length +1)+"?");
@@ -65,22 +89,10 @@ dataLeida.forEach(e => {
 
 /*Dado un objeto fecha retornamos un string en formato dd/mm/aaaa para simplificar la lectura cuando no queremos ver la fecha completa con hora y todos los chiches.*/
 function obtenerFechaFormateada(fecha) {
-
-    //To-Do: cambiar getDay por getDate ya que ese es el número de día, no dow, y a month +1
-    return fecha.getDate()+"/"+(fecha.getMonth() +1)+"/"+fecha.getFullYear();
+    //return fecha.getDate()+"/"+(fecha.getMonth() +1)+"/"+fecha.getFullYear();
+    return fecha.getDate()+"/"+(fecha.getMonth() +1)+"/"+fecha.getFullYear() + " - "+fecha.getHours()+":"+(fecha.getMinutes()<10?"0":"")+fecha.getMinutes()+":"+ (fecha.getSeconds()<10?"0":"") + fecha.getSeconds();
 }
 
-//Recibimos el array y si debe limpiar la consola o no
-// function mostrarProductos(arreglo, clearScreen) {
-//     if(clearScreen === true) {
-//         console.clear();
-//         console.log("%cProductos:","font-size:1rem;color:blue;");
-//     }
-
-//     for(let elemento of arreglo) {
-//         console.log(elemento.idMeli + ": " + elemento.titulo + " - " + elemento.precio + "$ - " + obtenerFechaFormateada(elemento.fecha));
-//     }
-// }
 
 // function buscarProductosPorNombre() {
 //     let tituloBuscado = prompt("Ingrese el nombre del producto a buscar:");
@@ -147,35 +159,61 @@ function obtenerFechaFormateada(fecha) {
 //     }
 // }
 
+let urlInput = document.getElementById("urlInput");
+urlInput.onfocus = () => {urlInput.value=""};
 
-// async function buscar(buscado) {
-//     console.log("google api: " + buscado);
-//     const response = await fetch('https://www.googleapis.com/youtube/v3/search?key=AIzaSyAD6_lw_djitCmUxEI8WyNyjvonlUTT57E&q='+buscado+' en vivo', {});
-//     //console.log('response.status: ', response.status); //
-//     if(response.status === 403) {
-//       console.log("sin couta para la api");
-//     }
-//     const data = await response.json();
-//     for(let i=0;i<5;i++) {
-//       let tipo = data['items'][i]['id']['kind'];
-//       let id = data['items'][i]['id']['videoId'];
-//       //console.log(tipo + " - " + id);
-//       if(tipo === "youtube#video") {
-//         //console.log("bien: " + id)
-//         return id;
-//       }
-//     }
-//     //console.log("ups no")
-//     return "nada";
-  
-//    // return json.first_name.concat(' ').concat(json.last_name);
-//     //return "retornando";
-//   }
+let botonAgregarProductos = document.getElementById("botonAgregarProductos");
+botonAgregarProductos.addEventListener("click", agregarProductos);
+
+function agregarProductos() {
+    let user = urlInput.value;
+    urlInput.value = "";
+    const inicioId = user.indexOf("MLA") +3;                    //+3 por el "MLA"
+    console.log("Inicio: " + inicioId);
+
+    let meliIdEncontrado = "";
+
+
+    //Ya que el codigo meli puede iniciar con "MLA" o con "MLA-", y su largo es variable pero son sólo números,
+    //recorremos el string de la url desde la posición de URL y concatenamos los caracteres mientras que sean números,
+    //Lo hacemos con un for desde 0 (desde el inicio del substring) hasta 15 (como una exageración de un código muy largo pero son de 14 o 15).
+
+    for(let i=0;i<=15;i++) {
+        let caracter = "";
+        caracter += user[inicioId+i];
+        if(!isNaN(parseInt(caracter))) {
+            meliIdEncontrado += caracter;
+        }
+        console.log(caracter + "-" + parseInt(caracter));
+    }
+
+    console.log("Id hallado: " + meliIdEncontrado)
+
+    if(inicioId < 0 || inicioId === 2) {
+        urlInput.value = "Ups! Algo salió mal..."
+        urlInput.classList.add("input-error");
+    }
+
+    //Algunas publicaciones tiene un ID de 8 dígitos que por alguna razón la API no devuelve nada.
+    if(meliIdEncontrado.length <= 8) {
+        urlInput.value = "Ups! Códigos de 8 dígitos no soportados.";
+        urlInput.classList.add("input-error");
+    }
+
+    if(inicioId >= 0 && inicioId !== 2 && meliIdEncontrado.length>=9) {
+        productos.push(new Producto("MLA-"+meliIdEncontrado,"titulo",1,false,new Date()));
+        //productos.reverse();
+        notificaciones.push(new Notificacion(new Date(),"Nuevo producto agregado!"));
+        reconstruirDom();
+    }
+}
 
 async function getImgUrlfromMeli(id_meli){
-    //console.log(id_meli)
+    //console.log("ID: " + id_meli);
 
-    const response = await fetch('https://api.mercadolibre.com/items/'+id_meli, {});
+    let id_meli_api = id_meli.replace("MLA-","MLA");
+
+    const response = await fetch('https://api.mercadolibre.com/items/'+id_meli_api, {});
     //console.log(response);
     const data = await response.json();
     const img = data['secure_thumbnail'];
@@ -191,17 +229,21 @@ async function getImgUrlfromMeli(id_meli){
 
 function borrarProducto(indice) {
     //Recibimos el índice de dónde está el objeto a eliminar, y luego de borrarlo limpiamos todo el HTML del contenedor y lo reconstruimos
-    //console.log(indice);
     productos.splice(indice,1);
-    document.getElementById("productosContenedor").innerHTML = "";
-    productos.forEach(e => {cargarProductoADom(e);});
-
+    notificaciones.push(new Notificacion(new Date(),"Producto eliminado."));
+    reconstruirDom();
 }
 
+function cargarNotificacionADom(objRecibido) {
+    let notificacionesContenedor = document.getElementById("notificacionesContenedor");
+    notificacionesContenedor.innerHTML += `
+        <span>${obtenerFechaFormateada(objRecibido.fecha)} - ${objRecibido.descripcion}</span>
+    `;
+}
 
 function cargarProductoADom(objRecibido) {
     let productosContenedor = document.getElementById("productosContenedor");
-    //console.log()
+
     let productoAgregar = `
     <div class="productos__individual">
         <div class="superior">
@@ -215,7 +257,7 @@ function cargarProductoADom(objRecibido) {
         <div class="principal">
             <span class="fecha">${obtenerFechaFormateada(objRecibido.fecha)}</span>
             <span class="titulo"></span>
-            <a target="_blank" href="https://articulo.mercadolibre.com.ar/${objRecibido.idMeli.replace("MLA","MLA-")}">${objRecibido.titulo}</a>
+            <a target="_blank" href="https://articulo.mercadolibre.com.ar/${objRecibido.idMeli}">${objRecibido.titulo}</a>
             <img src="" id="img-${objRecibido.idMeli}">
             <span class="precio">${objRecibido.precio}</span>
         </div>
@@ -230,9 +272,31 @@ function cargarProductoADom(objRecibido) {
 
 
 
+function reconstruirDom() {
+    document.getElementById("productosContenedor").innerHTML = "";
+    document.getElementById("notificacionesContenedor").innerHTML = "";
 
-productos.forEach(e => {cargarProductoADom(e);
-});
+    //notificaciones.reverse();
+    productos.sort((a,b) => b.fecha - a.fecha);                 //Ordenamos los productos por fecha en que se agregaron.
+    notificaciones.sort((a,b) => b.fecha - a.fecha);
+
+    productos.forEach(e => {
+        //console.log(e)
+        cargarProductoADom(e);
+    });
+
+    notificaciones.forEach(e => {
+        cargarNotificacionADom(e);
+    });
+
+    localStorage.setItem("tenes-stock_productos",JSON.stringify(productos));
+    localStorage.setItem("tenes-stock_notificaciones",JSON.stringify(notificaciones));
+}
+
+reconstruirDom();
+
+
+
 
 
 //cargarProductoADom(0);
