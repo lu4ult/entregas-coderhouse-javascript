@@ -47,16 +47,6 @@ body main {
 body main i {
   font-size: 3rem;
 }
-body main button {
-  font-size: 2rem;
-  margin: 1rem;
-  padding: 1rem;
-  color: white;
-  background-color: green;
-}
-body main button:hover {
-  background-color: blue;
-}
 body main .productos {
   width: 90%;
   display: flex;
@@ -101,9 +91,19 @@ body main .productos .productos__individual .superior .botones {
   display: flex;
   justify-content: right;
 }
-body main .productos .productos__individual .superior .botones i {
-  margin: 4px;
-  font-size: 1.5rem;
+body main .productos .productos__individual .superior .botones button {
+  border: none;
+  outline: none;
+  background-color: inherit;
+  cursor: pointer;
+}
+body main .productos .productos__individual .superior .botones button svg {
+  width: 30px;
+  aspect-ratio: 1;
+  fill: inherit;
+}
+body main .productos .productos__individual .superior .botones button:hover svg {
+  fill: red;
 }
 body main .productos .productos__individual .principal {
   display: flex;
@@ -114,6 +114,9 @@ body main .productos .productos__individual .principal {
   justify-content: space-between;
   height: 100%;
   width: 100%;
+}
+body main .productos .productos__individual .principal .fecha {
+  font-size: 1.2rem;
 }
 body main .productos .productos__individual .principal .titulo {
   font-size: 1.5rem;
@@ -140,10 +143,10 @@ body main .productos .productos__individual .abajo .estado {
   color: white;
   font-size: 2rem;
 }
-body main .productos .productos__individual .abajo .activo {
+body main .productos .productos__individual .abajo .estado-true {
   background-color: green;
 }
-body main .productos .productos__individual .abajo .inactivo {
+body main .productos .productos__individual .abajo .estado-false {
   background-color: red;
 }
 body footer {

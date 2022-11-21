@@ -82,17 +82,17 @@ body {
             font-size: 3rem;
         }
 
-        button {
-            font-size: 2rem;
-            margin: 1rem;
-            padding: 1rem;
-            color: white;
-            background-color: green;
-            // width: 300px;
-            &:hover {
-                background-color: blue;
-            }
-        }
+        // button {
+        //     font-size: 2rem;
+        //     margin: 1rem;
+        //     padding: 1rem;
+        //     color: white;
+        //     background-color: green;
+        //     // width: 300px;
+        //     &:hover {
+        //         background-color: blue;
+        //     }
+        // }
 
         .productos {
             //border: 1px solid yellow;
@@ -128,10 +128,23 @@ body {
                     .botones {
                         display: flex;
                         justify-content: right;
-                        i {
-                            margin: 4px;
-                            font-size: 1.5rem;
-                        }
+
+                       button {
+                            border: none;
+                            outline: none;
+                            background-color: inherit;
+                            cursor: pointer;
+                            svg {
+                                width: 30px;
+                                aspect-ratio: 1;
+                                fill: inherit;
+                            }
+                            &:hover {
+                                svg {
+                                    fill: red;
+                                }
+                            }
+                       }
                     }
                 }
 
@@ -141,6 +154,10 @@ body {
                     justify-content: space-between;
                     height: 100%;
                     width: 100%;
+
+                    .fecha {
+                        font-size: 1.2rem;
+                    }
                     .titulo {
                         font-size: 1.5rem;
                     }
@@ -166,11 +183,11 @@ body {
                         color: white;
                         font-size: 2rem;
                     }
-                    .activo {
+                    .estado-true {
                         background-color: green;
                     }
 
-                    .inactivo {
+                    .estado-false {
                         background-color: red;
                     }
                 }
