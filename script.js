@@ -362,6 +362,8 @@ function presupuesto() {
     }
 }
 
+
+
 /**********************     NAVEGACIÓN      ***********************************************************************************/
 let botonGeneradorRandom = document.getElementById("botonGeneradorRandom");
 botonGeneradorRandom.onclick = () => {
@@ -408,6 +410,20 @@ botonPapelera.onclick = () => {
     }
 };
 
+
+
+/**********************     TECLADO      ***********************************************************************************/
+
+//Simulamos el hacer click al presionar enter según dónde esté haciendo foco
+window.addEventListener('keydown', function (e) {
+    if(e.key === "Enter" && document.getElementById("urlInput") === document.activeElement) {
+        document.getElementById("botonAgregarProductos").click();
+    }
+
+    if(e.key === "Enter" && document.getElementById("presupuestoInput") === document.activeElement) {
+        document.getElementById("botonPresupuesto").click();
+    }
+});
 /******************************************************************************************************************************/
 
 
