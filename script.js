@@ -6,7 +6,7 @@ class Producto {
     constructor(idMeli,titulo,precio,estado, fecha) {
         this.idMeli = idMeli;                                                                      //Como identificador del producto usaremos directamente el identificador de la publicación que nos da Mercadolibre.
         this.titulo = titulo.toLowerCase();
-        this.precio = precio;
+        this.precio = parseInt(precio);
         this.estado = estado;
         this.fecha = fecha;
     }
@@ -32,10 +32,11 @@ class Notificacion {
 
 
 //Agregamos de entrada algunos productos para que haya algo de contenido.
-let productosBase =[ new Producto("MLA-1120052195","Cable",559999,true, new Date()),
+let productosBase =[
+                new Producto("MLA-1120052195","Cable",559999,true, new Date()),
                 new Producto("MLA-818528606","RAI",10429,false, new Date()),
                 new Producto("MLA-900797325","Bitcoin Ticker",6869,false, new Date()),
-                new Producto("MLA-1154142031","Juguete gatos",65,false, new Date()),
+                new Producto("MLA-1154142031","Juguete gatos",650,false, new Date()),
                 new Producto("MLA-906312866","proyector",40000,true, new Date()),
                 new Producto("MLA-879189343","gazebo",44000,false, new Date()),
                 new Producto("MLA-1117926574","Timbre Programable",30000,true, new Date())
@@ -43,9 +44,10 @@ let productosBase =[ new Producto("MLA-1120052195","Cable",559999,true, new Date
 
 let productos = [];
 let notificaciones = [];
+let papelera = [];
+
 
 let dataLocal = localStorage.getItem("tenes-stock_productos");
-
 //Si es la primera vez que carga la página le cargamos algunos productos aleatorios.
 if(dataLocal === null) {
     console.log("Creando data local random")
@@ -106,58 +108,7 @@ function obtenerFechaFormateada(fecha) {
 // }
 
 
-// function listarProductosPorPresupuesto() {
-//     let presupuestoUsuario = parseInt(prompt("Cuál es su presupuesto?"));
-//     //let presupuestoUsuario = 11000;
-//     productos.sort((a,b) => a.precio - b.precio);                                                   //Fuente: https://stackoverflow.com/questions/1129216
-//     console.clear();
-//     console.log("%cProductos ordenados de menor a mayor precio:","font-size:1rem;color:blue;");
-//     mostrarProductos(productos,false);
 
-//     console.log("----------");
-
-//     /*
-//     Ahora analizamos cuántos productos podría comprar el usuario según su presupuesto.
-//     Existen tres escenarios:
-//     1: el presupuesto no alcanza para ningún producto
-//     2: el presupuesto alcanza para todos los productos.
-//     3: el presupuesto alcanza para algunos de los productos
-//     */
-
-//     //Escenario 1:
-//     if(presupuestoUsuario < productos[0].precio) {                                                  //Comparamos contra el primer elemento del array ya que ya se ordenó.
-//         console.clear();
-//         console.log("Ups! no alcanza para ninguno!");
-//         console.log("Necesita "+ (productos[0].precio - presupuestoUsuario) + "$ para comprar al menos " + productos[0].titulo);
-//     }
-//     else {
-//         //Escenario 2:
-//         let sumatoriaTotal = 0;                                                                     //Calculamos el costo del carrito entero.
-//         for(let el of productos) {
-//             sumatoriaTotal += el.precio;
-//         }
-//         if(sumatoriaTotal <= presupuestoUsuario) {
-//             console.log("Felicidades! Le alcanza para comprar todo!");
-//         }
-
-//         //Escenario 3;
-//         else {
-//             //console.log("escenario 3");
-//             let indice = 0;
-//             let costoParcialCarrito = 0;
-//             let mensajeParaUsuario = "";
-
-//             do {                                                                                    //Hacemos un do-while en lugar de while ya que alcana para almenos el primer producto (escenario 1).
-//                 costoParcialCarrito += productos[indice].precio;
-//                 //console.log("costo carrito: "+costoParcialCarrito);
-//                 mensajeParaUsuario += "\n*\t"+productos[indice].titulo;
-
-//                 indice++;
-//             }while((costoParcialCarrito + productos[indice].precio) <= presupuestoUsuario);         //Mientras que el costo del carrito sumado al siguiente producto sea menor al presupuesto.
-//         console.log("Su presupuesto alcanza para:" + mensajeParaUsuario + "\nY sobran " + (presupuestoUsuario - costoParcialCarrito) + " $");
-//         }
-//     }
-// }
 
 let urlInput = document.getElementById("urlInput");
 urlInput.onfocus = () => {urlInput.value=""};
@@ -227,11 +178,32 @@ async function getImgUrlfromMeli(id_meli){
     return img;
 }
 
-function borrarProducto(indice) {
-    //Recibimos el índice de dónde está el objeto a eliminar, y luego de borrarlo limpiamos todo el HTML del contenedor y lo reconstruimos
-    productos.splice(indice,1);
+
+
+//Esto lo hice así manualmente porque el "findIndex" no hubo forma de hacerlo funcionar.
+function findManual(id) {
+    for(let i = 0; i<=productos.length;i++) {
+        if(productos[i].idMeli === id)
+            return i;
+    }
+    return -1;
+}
+
+function borrarProducto(_id) {
+    //let indiceProductoBuscado = productos.findIndex(e => {e.idMeli == _id})
+
+    document.getElementById("botonNotificaciones").classList.add("reciente");
+    //setTimeout(document.getElementById("botonNotificaciones").classList.remove("reciente"),2000)
+    let indiceProductoBuscado = findManual(_id);
+    console.log("Indice encontrado: ")
+    console.log(indiceProductoBuscado);
+
+    papelera.push(productos[indiceProductoBuscado]);
+    productos.splice(indiceProductoBuscado,1);
     notificaciones.push(new Notificacion(new Date(),"Producto eliminado."));
     reconstruirDom();
+    console.log("Papelera: ")
+    console.log(papelera);
 }
 
 function cargarNotificacionADom(objRecibido) {
@@ -245,13 +217,13 @@ function cargarProductoADom(objRecibido) {
     let productosContenedor = document.getElementById("productosContenedor");
 
     let productoAgregar = `
-    <div class="productos__individual">
+    <div class="productos__individual" draggable="true">
         <div class="superior">
             <div class="identificador">
             <span>${objRecibido.idMeli}</span>
             </div>
             <div class="botones">
-                <button onclick="borrarProducto(${productos.indexOf(objRecibido)});">${deleteSvg}</button>
+                <button onclick="borrarProducto('${objRecibido.idMeli}');">${deleteSvg}</button>
             </div>
         </div>
         <div class="principal">
@@ -295,9 +267,109 @@ function reconstruirDom() {
 
 reconstruirDom();
 
+let botonPresupuesto = document.getElementById("botonPresupuesto");
+
+// let urlInput = document.getElementById("urlInput");
+// urlInput.onfocus = () => {urlInput.value=""};
+
+let inputPresupuesto = document.getElementById("presupuestoInput")
+
+inputPresupuesto.onfocus = () => {inputPresupuesto.value = ""};
+botonPresupuesto.addEventListener("click",presupuesto);
+function presupuesto() {
+    let productosSegunPresupuesto = [];
+
+    let presupuestoUsuario = inputPresupuesto.value;
+    if(isNaN(presupuestoUsuario)) {
+        inputPresupuesto.value = "Ingrese sólo números";
+        console.log("mal")
+        return;
+    }
+
+    console.log(presupuestoUsuario + "$")
+    productos.sort((a,b) => a.precio - b.precio);               //Ordenamos el array por precio
+    console.log(productos[0].precio);
+
+    /*
+    Ahora analizamos cuántos productos podría comprar el usuario según su presupuesto.
+    Existen tres escenarios:
+    1: el presupuesto no alcanza para ningún producto
+    2: el presupuesto alcanza para todos los productos.
+    3: el presupuesto alcanza para algunos de los productos
+    */
+
+    //Escenario 1:
+    if(presupuestoUsuario < productos[0].precio) {                                                  //Comparamos contra el primer elemento del array ya que ya se ordenó.
+        console.clear();
+        console.log("Ups! no alcanza para ninguno!");
+        document.getElementById("productosContenedor").innerHTML = "";
+        inputPresupuesto.value = "Necesita "+ (productos[0].precio - presupuestoUsuario) + "$ para comprar al menos " + productos[0].titulo;
+        console.log("Necesita "+ (productos[0].precio - presupuestoUsuario) + "$ para comprar al menos " + productos[0].titulo);
+    }
+    else {
+        //Escenario 2:
+        let sumatoriaTotal = 0;                                                                     //Calculamos el costo del carrito entero.
+        for(let el of productos) {
+            sumatoriaTotal += el.precio;
+        }
+        if(sumatoriaTotal <= presupuestoUsuario) {
+            console.log("Felicidades! Le alcanza para comprar todo!");
+            reconstruirDom();
+            inputPresupuesto.value = "Alcanza para todo!";
+            //document.getElementById("productosContenedor").innerHTML = "Alcanza para todo";
+        }
+
+        //Escenario 3;
+        else {
+            //console.log("escenario 3");
+            document.getElementById("productosContenedor").innerHTML = "";          //Eliminamos los productos para mostrar sólo los que alcanza el presupuesto.
+            let indice = 0;
+            let costoParcialCarrito = 0;
+            let mensajeParaUsuario = "";
+
+            do {                                                                                    //Hacemos un do-while en lugar de while ya que alcana para almenos el primer producto (escenario 1).
+                costoParcialCarrito += productos[indice].precio;
+                //console.log("costo carrito: "+costoParcialCarrito);
+                mensajeParaUsuario += "\n*\t"+productos[indice].titulo;
+                //productosSegunPresupuesto.push(productos[indice]);
+                cargarProductoADom(productos[indice]);
+                console.log(productosSegunPresupuesto);
+                indice++;
+            }while((costoParcialCarrito + productos[indice].precio) <= presupuestoUsuario);         //Mientras que el costo del carrito sumado al siguiente producto sea menor al presupuesto.
+        console.log("Su presupuesto alcanza para:" + mensajeParaUsuario + "\nY sobran " + (presupuestoUsuario - costoParcialCarrito) + " $");
+
+        }
+    }
+}
+
+
+// function listarProductosPorPresupuesto() {
+//     let presupuestoUsuario = parseInt(prompt("Cuál es su presupuesto?"));
+//     //let presupuestoUsuario = 11000;
+//                                                        //Fuente: https://stackoverflow.com/questions/1129216
+//     console.clear();
+//     console.log("%cProductos ordenados de menor a mayor precio:","font-size:1rem;color:blue;");
+//     mostrarProductos(productos,false);
+
+//     console.log("----------");
+
+//     
+
+//     }
+// }
 
 
 
+
+// console.log(productos.findIndex(e => {e.precio == 650})
+
+let resultado = "seee";
+
+
+
+resultado = productos.findIndex(e => {Math.floor(e.precio) === 10429})
+
+console.log(resultado)
 
 //cargarProductoADom(0);
 /**************************************************************************************************/

@@ -48,6 +48,9 @@ body {
         "footer";
 
     header {
+        position: sticky;
+        top: 0;
+
         padding: 0.5rem;
         grid-area: header;
         background: $amarillo;
@@ -57,7 +60,8 @@ body {
         justify-content: space-between;
 
         .logo {
-            @include centrarConFlex(1);
+            width: 300px;
+            //@include centrarConFlex(1);
             img {
                 width: 50px;
                 aspect-ratio: 1;
@@ -65,11 +69,67 @@ body {
 
         }
 
-        nav {
-            ul {
-                list-style-type: none;
-                i {
-                    font-size: 1.5rem;
+        .titulo {
+            @include centrarConFlex(1);
+            width: 300px;
+        }
+
+        .navegacion {
+            position: relative;
+            display: flex;
+            justify-content: right;
+            width: 300px;
+            button {
+                cursor: pointer;
+                width: 50px;
+                aspect-ratio: 1;
+                background-color: inherit;
+                outline: none;
+                border: none;
+                margin: 0 1rem;
+                svg {
+                    width: 100%;
+                    height: 100%;
+                    fill: $gris;
+                }
+
+                &:hover {
+                    svg {
+                        fill: green;
+                    }
+                }
+                &.oculto {
+                    display: none;
+                }
+            }
+
+            #botonDescargarCsv {
+                &:hover {
+                    &::after {
+                        position: absolute;
+                        top: 60px;
+                        right: 60px;
+                        content: "Descargar CSV";
+                    }
+                }
+            }
+
+            #botonPapelera {
+                &:hover {
+                    &::after {
+                        position: absolute;
+                        top: 60px;
+                        right: 0;
+                        content: "Restaurar";
+                    }
+                }
+            }
+
+            #botonNotificaciones {
+                &.reciente {
+                    svg {
+                        fill: blue;
+                    }
                 }
             }
         }
@@ -96,7 +156,7 @@ body {
         //     }
         // }
 
-        .agregarProductos {
+        .agregarProductos, .presupuesto {
             width: 80%;
             display: flex;
             flex-direction: column;
@@ -187,7 +247,7 @@ body {
                             svg {
                                 width: 30px;
                                 aspect-ratio: 1;
-                                fill: inherit;
+                                fill: $gris;
                             }
                             &:hover {
                                 svg {
