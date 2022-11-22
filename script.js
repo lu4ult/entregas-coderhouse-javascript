@@ -427,7 +427,24 @@ window.addEventListener('keydown', function (e) {
 /******************************************************************************************************************************/
 
 
+
 //console.clear();
 console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
-reconstruirDom()
+reconstruirDom();
+
+
+// Toastify({
+//     text: "This is a toast",
+//     duration: 1500,
+//     destination: "https://github.com/apvarun/toastify-js",
+//     newWindow: true,
+//     close: true,
+//     gravity: "top", // `top` or `bottom`
+//     position: "right", // `left`, `center` or `right`
+//     stopOnFocus: true, // Prevents dismissing of toast on hover
+//     style: {
+//       background: "linear-gradient(to right, #00b09b, #96c93d)",
+//     },
+//     onClick: function(){} // Callback after click
+//   }).showToast();
 
