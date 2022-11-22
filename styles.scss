@@ -42,6 +42,10 @@ a {
     &:active {
         color: inherit;
     }
+    &:link {
+        color: inherit;
+    }
+
 }
 
 body {
@@ -59,6 +63,8 @@ body {
     header {
         position: sticky;
         top: 0;
+
+        z-index: 50;
 
         padding: 0.5rem;
         grid-area: header;
@@ -118,8 +124,8 @@ body {
                 &:hover {
                     &::after {
                         position: absolute;
-                        top: 60px;
-                        right: 60px;
+                        top: 80px;
+                        right: 5px;
                         content: "Descargar CSV";
                     }
                 }
@@ -129,14 +135,26 @@ body {
                 &:hover {
                     &::after {
                         position: absolute;
-                        top: 60px;
-                        right: 0;
+                        top: 80px;
+                        right: 5px;
                         content: "Restaurar";
                     }
                 }
             }
 
             #botonNotificaciones {
+                &:hover {
+                    svg {
+                        fill: green;
+                    }
+                    &::after {
+                        position: absolute;
+                        top: 80px;
+                        right: 5px;
+                        content: "Ver Notificaciones";
+                    }
+                }
+
                 &.recentlyUpdated {
                     animation: shake 0.5s;
                     animation-iteration-count: infinite;
@@ -148,6 +166,17 @@ body {
                     svg {
                         fill: $gris;
                         transition: all 1s;
+                    }
+                }
+            }
+
+            #botonGeneradorRandom {
+                &:hover {
+                    &::after {
+                        position: absolute;
+                        top: 80px;
+                        right: 5px;
+                        content: "Cargar Productos Aleatorios";
                     }
                 }
             }
@@ -194,6 +223,13 @@ body {
                 border-bottom: 1px solid blue;
                 &.input-error {
                     background-color: red;
+                    color: white;
+                    font-size: 1rem;
+                    font-weight: 600;
+                }
+
+                &.input-success {
+                    background-color: green;
                     color: white;
                     font-size: 1rem;
                     font-weight: 600;
@@ -280,9 +316,12 @@ body {
                         font-size: 1.2rem;
                     }
                     .titulo {
+                        width: 90%;
                         font-size: 1.5rem;
+                        text-align: center;
                     }
                     img {
+                        z-index: 10;
                         width: 70%;
                         mix-blend-mode: multiply;
                     }

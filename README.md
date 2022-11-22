@@ -2,6 +2,12 @@
 
 <a href="https://lu4ult.github.io/entregas-coderhouse-javascript/" target="_blank">Ver Online en github pages!</a>
 
+Tercera pre-entrega
+- [x] Acceso y modificación del DOM
+- [x] localStorage y JSON
+- [x] optimización del código
+
+
 Segunda pre-entrega
 - [x] prompt y console.log
 - [x] arrays

@@ -13,6 +13,9 @@ a:visited {
 a:active {
   color: inherit;
 }
+a:link {
+  color: inherit;
+}
 
 body {
   display: grid;
@@ -23,6 +26,7 @@ body {
 body header {
   position: sticky;
   top: 0;
+  z-index: 50;
   padding: 0.5rem;
   grid-area: header;
   background: #fff159;
@@ -76,15 +80,24 @@ body header .navegacion button.oculto {
 }
 body header .navegacion #botonDescargarCsv:hover::after {
   position: absolute;
-  top: 60px;
-  right: 60px;
+  top: 80px;
+  right: 5px;
   content: "Descargar CSV";
 }
 body header .navegacion #botonPapelera:hover::after {
   position: absolute;
-  top: 60px;
-  right: 0;
+  top: 80px;
+  right: 5px;
   content: "Restaurar";
+}
+body header .navegacion #botonNotificaciones:hover svg {
+  fill: green;
+}
+body header .navegacion #botonNotificaciones:hover::after {
+  position: absolute;
+  top: 80px;
+  right: 5px;
+  content: "Ver Notificaciones";
 }
 body header .navegacion #botonNotificaciones.recentlyUpdated {
   animation: shake 0.5s;
@@ -96,6 +109,12 @@ body header .navegacion #botonNotificaciones.recentlyUpdated svg {
 body header .navegacion #botonNotificaciones.recentlyUpdatedRemoved svg {
   fill: #666666;
   transition: all 1s;
+}
+body header .navegacion #botonGeneradorRandom:hover::after {
+  position: absolute;
+  top: 80px;
+  right: 5px;
+  content: "Cargar Productos Aleatorios";
 }
 body main {
   grid-area: main;
@@ -129,6 +148,12 @@ body main .agregarProductos input, body main .presupuesto input {
 }
 body main .agregarProductos input.input-error, body main .presupuesto input.input-error {
   background-color: red;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+}
+body main .agregarProductos input.input-success, body main .presupuesto input.input-success {
+  background-color: green;
   color: white;
   font-size: 1rem;
   font-weight: 600;
@@ -217,9 +242,12 @@ body main .productos .productos__individual .principal .fecha {
   font-size: 1.2rem;
 }
 body main .productos .productos__individual .principal .titulo {
+  width: 90%;
   font-size: 1.5rem;
+  text-align: center;
 }
 body main .productos .productos__individual .principal img {
+  z-index: 10;
   width: 70%;
   mix-blend-mode: multiply;
 }

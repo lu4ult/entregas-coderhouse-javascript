@@ -35,13 +35,13 @@ class Notificacion {
 
 //Agregamos de entrada algunos productos para que haya algo de contenido.
 let productosBase =[
-                new Producto("MLA-1120052195","Cable",559999,true, new Date()),
                 new Producto("MLA-818528606","RAI",10429,false, new Date()),
                 new Producto("MLA-900797325","Bitcoin Ticker",6869,false, new Date()),
-                new Producto("MLA-1154142031","Juguete gatos",650,false, new Date()),
-                new Producto("MLA-906312866","proyector",40000,true, new Date()),
-                new Producto("MLA-879189343","gazebo",44000,false, new Date()),
-                new Producto("MLA-1117926574","Timbre Programable",30000,true, new Date())
+                new Producto("MLA-1117926574","Timbre Programable",30000,true, new Date()),
+                new Producto("MLA-818539416","Adaptador programador esp-01",2659,true, new Date()),
+                new Producto("MLA-1167147839","Dimmer Módulo Desarrollo",11859,false, new Date()),
+                new Producto("MLA-918716646","Bitcoin Ticker Grande",18000,true, new Date()),
+                new Producto("MLA-818527058","Dimmer Control Con Arduino C/cruce Por Cero",4559,false, new Date())
                 ];
 
 let productos = [];
@@ -81,7 +81,7 @@ notificacionesLeidasLocal.forEach(e => {
 
 /**********************     FUNCIONES GENERALES      ***********************************************************************************/
 
-/*Dado un objeto fecha retornamos un string en formato dd/mm/aaaa para simplificar la lectura cuando no queremos ver la fecha completa con hora y todos los chiches.*/
+/*Dado un objeto fecha retornamos un string en formato dd/mm/aaaa para simplificar la lectura.*/
 function obtenerFechaFormateada(fecha) {
     //return fecha.getDate()+"/"+(fecha.getMonth() +1)+"/"+fecha.getFullYear();
     return fecha.getDate()+"/"+(fecha.getMonth() +1)+"/"+fecha.getFullYear() + " - "+fecha.getHours()+":"+(fecha.getMinutes()<10?"0":"")+fecha.getMinutes()+":"+ (fecha.getSeconds()<10?"0":"") + fecha.getSeconds();
@@ -101,7 +101,10 @@ function obtenerFechaFormateada(fecha) {
 
 
 let urlInput = document.getElementById("urlInput");
-urlInput.onfocus = () => {urlInput.value=""};
+urlInput.onfocus = () => {
+    urlInput.value="";
+    urlInput.classList.remove("input-error");
+};
 
 let botonAgregarProductos = document.getElementById("botonAgregarProductos");
 botonAgregarProductos.addEventListener("click", agregarProductos);
@@ -142,7 +145,7 @@ function agregarProductos() {
     }
 
     if(inicioId >= 0 && inicioId !== 2 && meliIdEncontrado.length>=9) {
-        productos.push(new Producto("MLA-"+meliIdEncontrado,"titulo",1,false,new Date()));
+        productos.push(new Producto("MLA-"+meliIdEncontrado,"titulo",Math.floor(Math.random()*1000),false,new Date()));
         //productos.reverse();
         notificaciones.push(new Notificacion(new Date(),"Nuevo producto agregado!"));
         reconstruirDom();
@@ -197,20 +200,26 @@ function borrarProducto(_id) {
     notificaciones.push(new Notificacion(new Date(),productos[indiceProductoBuscado].titulo + " eliminado."));
 
     papelera.push(productos[indiceProductoBuscado]);
+    document.getElementById("botonPapelera").classList.remove("oculto");
     productos.splice(indiceProductoBuscado,1);
-    reconstruirDom();
 
     if(productos.length === 0) {
         console.log("sin elementos")
         document.getElementById("botonGeneradorRandom").classList.remove("oculto");
     }
+
+    reconstruirDom();
+
     console.log("Papelera: ")
     console.log(papelera);
 }
 
 function borrarNotificacion(indice) {
     notificaciones.splice(indice,1);
-    reconstruirDom();
+
+    document.getElementById("notificacionesContenedor").innerHTML = "";         //No usamos reconstruirDom todo ya que sino "parpadean" los productos.
+    notificaciones.forEach(e => {cargarNotificacionADom(e);});
+
     if(notificaciones.length === 0) {
         document.getElementById("notificacionesContenedor").innerHTML ="<strong>Sin Notificaciones</strong>"
     }
@@ -240,8 +249,7 @@ function cargarProductoADom(objRecibido) {
         </div>
         <div class="principal">
             <span class="fecha">${obtenerFechaFormateada(objRecibido.fecha)}</span>
-            <span class="titulo"></span>
-            <a target="_blank" href="https://articulo.mercadolibre.com.ar/${objRecibido.idMeli}">${objRecibido.titulo}</a>
+            <a class="titulo" target="_blank" href="https://articulo.mercadolibre.com.ar/${objRecibido.idMeli}">${objRecibido.titulo}</a>
             <img src="" id="img-${objRecibido.idMeli}">
             <span class="precio">${objRecibido.precio}</span>
         </div>
@@ -280,7 +288,12 @@ function reconstruirDom() {
 let botonPresupuesto = document.getElementById("botonPresupuesto");
 let inputPresupuesto = document.getElementById("presupuestoInput")
 
-inputPresupuesto.onfocus = () => {inputPresupuesto.value = ""};
+inputPresupuesto.onfocus = () => {
+    inputPresupuesto.value = "";
+    inputPresupuesto.classList.remove("input-success");
+    inputPresupuesto.classList.remove("input-error");
+    };
+
 botonPresupuesto.addEventListener("click",presupuesto);
 function presupuesto() {
     let productosSegunPresupuesto = [];
@@ -306,9 +319,8 @@ function presupuesto() {
 
     //Escenario 1:
     if(presupuestoUsuario < productos[0].precio) {                                                  //Comparamos contra el primer elemento del array ya que ya se ordenó.
-        console.clear();
-        console.log("Ups! no alcanza para ninguno!");
         document.getElementById("productosContenedor").innerHTML = "";
+        inputPresupuesto.classList.add("input-error");
         inputPresupuesto.value = "Necesita "+ (productos[0].precio - presupuestoUsuario) + "$ para comprar al menos " + productos[0].titulo;
         console.log("Necesita "+ (productos[0].precio - presupuestoUsuario) + "$ para comprar al menos " + productos[0].titulo);
     }
@@ -319,9 +331,10 @@ function presupuesto() {
             sumatoriaTotal += el.precio;
         }
         if(sumatoriaTotal <= presupuestoUsuario) {
-            console.log("Felicidades! Le alcanza para comprar todo!");
+            //console.log("Felicidades! Le alcanza para comprar todo!");
             reconstruirDom();
-            inputPresupuesto.value = "Alcanza para todo!";
+            inputPresupuesto.value = "Felicidades! Le alcanza para comprar todo!";
+            inputPresupuesto.classList.add("input-success")
             //document.getElementById("productosContenedor").innerHTML = "Alcanza para todo";
         }
 
@@ -336,14 +349,15 @@ function presupuesto() {
             do {                                                                                    //Hacemos un do-while en lugar de while ya que alcana para almenos el primer producto (escenario 1).
                 costoParcialCarrito += productos[indice].precio;
                 //console.log("costo carrito: "+costoParcialCarrito);
-                mensajeParaUsuario += "\n*\t"+productos[indice].titulo;
+                mensajeParaUsuario += ", "+productos[indice].titulo;
                 //productosSegunPresupuesto.push(productos[indice]);
                 cargarProductoADom(productos[indice]);
                 console.log(productosSegunPresupuesto);
                 indice++;
             }while((costoParcialCarrito + productos[indice].precio) <= presupuestoUsuario);         //Mientras que el costo del carrito sumado al siguiente producto sea menor al presupuesto.
-        console.log("Su presupuesto alcanza para:" + mensajeParaUsuario + "\nY sobran " + (presupuestoUsuario - costoParcialCarrito) + " $");
-
+            inputPresupuesto.classList.add("input-success")
+            //inputPresupuesto.value = "Su presupuesto alcanza para: " + mensajeParaUsuario + " Y sobran " + (presupuestoUsuario - costoParcialCarrito) + " $";
+            inputPresupuesto.value = "Su presupuesto alcanza sólo para los siguientes productos y sobran " + (presupuestoUsuario - costoParcialCarrito) + "$";
         }
     }
 }
@@ -383,6 +397,15 @@ botonDescargarCsv.onclick = () => {
     anchorDescarga.setAttribute("download", "productos.csv");
     anchorDescarga.click(); // This will download the data file named "my_data.csv".
 
+};
+
+let botonPapelera = document.getElementById("botonPapelera");
+botonPapelera.onclick = () => {
+    productos.push(papelera.pop());                                             //Eliminamos el último objeto de la papelera y lo restauramos al array principal.
+    reconstruirDom();
+    if(papelera.length === 0) {
+        botonPapelera.classList.add("oculto");
+    }
 };
 
 /******************************************************************************************************************************/
