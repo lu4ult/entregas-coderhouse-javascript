@@ -4,6 +4,16 @@
   box-sizing: border-box;
 }
 
+a {
+  text-decoration: none;
+}
+a:visited {
+  color: inherit;
+}
+a:active {
+  color: inherit;
+}
+
 body {
   display: grid;
   background: #ebebeb;
@@ -17,6 +27,7 @@ body header {
   grid-area: header;
   background: #fff159;
   border-bottom: 1px solid #666666;
+  height: 100px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -75,8 +86,16 @@ body header .navegacion #botonPapelera:hover::after {
   right: 0;
   content: "Restaurar";
 }
-body header .navegacion #botonNotificaciones.reciente svg {
-  fill: blue;
+body header .navegacion #botonNotificaciones.recentlyUpdated {
+  animation: shake 0.5s;
+  animation-iteration-count: infinite;
+}
+body header .navegacion #botonNotificaciones.recentlyUpdated svg {
+  fill: red;
+}
+body header .navegacion #botonNotificaciones.recentlyUpdatedRemoved svg {
+  fill: #666666;
+  transition: all 1s;
 }
 body main {
   grid-area: main;
@@ -125,13 +144,6 @@ body main .agregarProductos button, body main .presupuesto button {
   margin: 0.5rem;
   padding: 0.5rem;
   width: 200px;
-}
-body main .notificacionesContenedor {
-  width: 80%;
-  border: 3px solid blue;
-  display: flex;
-  flex-direction: column;
-  padding: 0.5rem;
 }
 body main .productos {
   width: 90%;
@@ -235,6 +247,14 @@ body main .productos .productos__individual .abajo .estado-true {
 body main .productos .productos__individual .abajo .estado-false {
   background-color: red;
 }
+body main .github-logo {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+}
 body footer {
   padding: 2rem;
   grid-area: footer;
@@ -252,6 +272,81 @@ body footer a {
   text-decoration: none;
 }
 
+.notificacionesContenedor {
+  position: fixed;
+  width: 40vw;
+  height: auto;
+  min-height: 400px;
+  z-index: 100;
+  background-color: #99bee1;
+  top: 100px;
+  right: 10px;
+  border: 3px solid #666666;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.6);
+}
+.notificacionesContenedor div {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  color: #000;
+}
+.notificacionesContenedor div button {
+  border: none;
+  outline: none;
+  background-color: inherit;
+  cursor: pointer;
+  width: 25px;
+  margin-right: 0.5rem;
+}
+.notificacionesContenedor div button svg {
+  width: 100%;
+  height: 100%;
+  fill: #333;
+}
+
+.oculto {
+  display: none;
+  border: 5px solid red;
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+  10% {
+    transform: translate(-1px, -2px) rotate(-1deg);
+  }
+  20% {
+    transform: translate(-3px, 0px) rotate(1deg);
+  }
+  30% {
+    transform: translate(3px, 2px) rotate(0deg);
+  }
+  40% {
+    transform: translate(1px, -1px) rotate(1deg);
+  }
+  50% {
+    transform: translate(-1px, 2px) rotate(-1deg);
+  }
+  60% {
+    transform: translate(-3px, 1px) rotate(0deg);
+  }
+  70% {
+    transform: translate(3px, 1px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(-1px, -1px) rotate(1deg);
+  }
+  90% {
+    transform: translate(1px, 2px) rotate(0deg);
+  }
+  100% {
+    transform: translate(1px, -2px) rotate(-1deg);
+  }
+}
 @media only screen and (min-width: 767px) {
   body header .logo img {
     width: 90px;

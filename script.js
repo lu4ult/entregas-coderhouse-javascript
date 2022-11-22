@@ -1,4 +1,6 @@
 
+/**********************     VARIABLES GENERALES Y OBJETOS      ***********************************************************************************/
+
 let editSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.8 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"/></svg>'
 let deleteSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M175 175C184.4 165.7 199.6 165.7 208.1 175L255.1 222.1L303 175C312.4 165.7 327.6 165.7 336.1 175C346.3 184.4 346.3 199.6 336.1 208.1L289.9 255.1L336.1 303C346.3 312.4 346.3 327.6 336.1 336.1C327.6 346.3 312.4 346.3 303 336.1L255.1 289.9L208.1 336.1C199.6 346.3 184.4 346.3 175 336.1C165.7 327.6 165.7 312.4 175 303L222.1 255.1L175 208.1C165.7 199.6 165.7 184.4 175 175V175zM512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48z"/></svg>'
 
@@ -47,6 +49,7 @@ let notificaciones = [];
 let papelera = [];
 
 
+/**********************     LOCALSTORAGE      ***********************************************************************************/
 let dataLocal = localStorage.getItem("tenes-stock_productos");
 //Si es la primera vez que carga la página le cargamos algunos productos aleatorios.
 if(dataLocal === null) {
@@ -62,7 +65,7 @@ if(dataLocal === null) {
     //notificaciones.push();
     localStorage.setItem("tenes-stock_productos",JSON.stringify(arrayRandomGenerado));
     localStorage.setItem("tenes-stock_notificaciones",JSON.stringify([new Notificacion(new Date(),"Hola! Bienvenido")]));
-}
+    }
 
 
 let productosLeidosLocal = JSON.parse(localStorage.getItem("tenes-stock_productos"));
@@ -76,25 +79,13 @@ notificacionesLeidasLocal.forEach(e => {
 });
 
 
-
-// function agregarProductos() {
-//     let nombre = prompt("Cuál es el nombre del producto "+String(productos.length +1)+"?");
-//     let precio = parseInt(prompt("Y cuál es el precio del producto "+String(productos.length +1)+" ("+nombre+")?"));
-//     if(isNaN(precio))
-//         precio = 0;
-//     //let productoNuevo = new Producto("MLA",nombre,precio,true);
-//     productos.push(new Producto("MLA12345678",nombre,precio,true));
-
-//     mostrarProductos(productos,true);                                                                //Mostramos los productos luego de agregar alguno.
-// }
-
+/**********************     FUNCIONES GENERALES      ***********************************************************************************/
 
 /*Dado un objeto fecha retornamos un string en formato dd/mm/aaaa para simplificar la lectura cuando no queremos ver la fecha completa con hora y todos los chiches.*/
 function obtenerFechaFormateada(fecha) {
     //return fecha.getDate()+"/"+(fecha.getMonth() +1)+"/"+fecha.getFullYear();
     return fecha.getDate()+"/"+(fecha.getMonth() +1)+"/"+fecha.getFullYear() + " - "+fecha.getHours()+":"+(fecha.getMinutes()<10?"0":"")+fecha.getMinutes()+":"+ (fecha.getSeconds()<10?"0":"") + fecha.getSeconds();
 }
-
 
 // function buscarProductosPorNombre() {
 //     let tituloBuscado = prompt("Ingrese el nombre del producto a buscar:");
@@ -106,7 +97,6 @@ function obtenerFechaFormateada(fecha) {
 //     else
 //         console.log("Ups! No encontré nada...")
 // }
-
 
 
 
@@ -192,24 +182,46 @@ function findManual(id) {
 function borrarProducto(_id) {
     //let indiceProductoBuscado = productos.findIndex(e => {e.idMeli == _id})
 
-    document.getElementById("botonNotificaciones").classList.add("reciente");
-    //setTimeout(document.getElementById("botonNotificaciones").classList.remove("reciente"),2000)
+    let botonNotificaciones = document.getElementById("botonNotificaciones");
+    botonNotificaciones.classList.add("recentlyUpdated");
+    botonNotificaciones.classList.remove("recentlyUpdatedRemoved");
+
+    setTimeout(() => {
+        botonNotificaciones.classList.remove("recentlyUpdated");
+        botonNotificaciones.classList.add("recentlyUpdatedRemoved");
+    }, 500);
+
     let indiceProductoBuscado = findManual(_id);
-    console.log("Indice encontrado: ")
-    console.log(indiceProductoBuscado);
+    console.log("Indice encontrado: " + indiceProductoBuscado)
+
+    notificaciones.push(new Notificacion(new Date(),productos[indiceProductoBuscado].titulo + " eliminado."));
 
     papelera.push(productos[indiceProductoBuscado]);
     productos.splice(indiceProductoBuscado,1);
-    notificaciones.push(new Notificacion(new Date(),"Producto eliminado."));
     reconstruirDom();
+
+    if(productos.length === 0) {
+        console.log("sin elementos")
+        document.getElementById("botonGeneradorRandom").classList.remove("oculto");
+    }
     console.log("Papelera: ")
     console.log(papelera);
 }
 
+function borrarNotificacion(indice) {
+    notificaciones.splice(indice,1);
+    reconstruirDom();
+    if(notificaciones.length === 0) {
+        document.getElementById("notificacionesContenedor").innerHTML ="<strong>Sin Notificaciones</strong>"
+    }
+}
+
+
 function cargarNotificacionADom(objRecibido) {
     let notificacionesContenedor = document.getElementById("notificacionesContenedor");
+    //<button onclick="borrarProducto(${objRecibido.idMeli});"></button>
     notificacionesContenedor.innerHTML += `
-        <span>${obtenerFechaFormateada(objRecibido.fecha)} - ${objRecibido.descripcion}</span>
+        <div><button onclick="borrarNotificacion('${notificaciones.indexOf(objRecibido)}');">${deleteSvg}</button><span>${obtenerFechaFormateada(objRecibido.fecha)} - ${objRecibido.descripcion}</span></div>
     `;
 }
 
@@ -265,13 +277,7 @@ function reconstruirDom() {
     localStorage.setItem("tenes-stock_notificaciones",JSON.stringify(notificaciones));
 }
 
-reconstruirDom();
-
 let botonPresupuesto = document.getElementById("botonPresupuesto");
-
-// let urlInput = document.getElementById("urlInput");
-// urlInput.onfocus = () => {urlInput.value=""};
-
 let inputPresupuesto = document.getElementById("presupuestoInput")
 
 inputPresupuesto.onfocus = () => {inputPresupuesto.value = ""};
@@ -342,40 +348,47 @@ function presupuesto() {
     }
 }
 
+/**********************     NAVEGACIÓN      ***********************************************************************************/
+let botonGeneradorRandom = document.getElementById("botonGeneradorRandom");
+botonGeneradorRandom.onclick = () => {
+    localStorage.clear("tenes-stock_productos");
+    document.location.reload(true);
+};
 
-// function listarProductosPorPresupuesto() {
-//     let presupuestoUsuario = parseInt(prompt("Cuál es su presupuesto?"));
-//     //let presupuestoUsuario = 11000;
-//                                                        //Fuente: https://stackoverflow.com/questions/1129216
-//     console.clear();
-//     console.log("%cProductos ordenados de menor a mayor precio:","font-size:1rem;color:blue;");
-//     mostrarProductos(productos,false);
-
-//     console.log("----------");
-
-//     
-
-//     }
-// }
+let botonNotificaciones = document.getElementById("botonNotificaciones");
+botonNotificaciones.onclick = () => {
+    document.getElementById("notificacionesContenedor").classList.toggle("oculto");
+};
 
 
+let botonDescargarCsv = document.getElementById("botonDescargarCsv");
+botonDescargarCsv.onclick = () => {
+
+    //Para poder descargar un archivo como CSV básicamente creamos una matriz bidimensional y luego se codifica y descarga con un <a>
+    let textosDeNotas = [];
+    for(let el of productos) {
+        let nuevoArray = [el.idMeli,el.titulo,el.precio,el.estado?"ACTIVO":"INACTIVO",obtenerFechaFormateada(el.fecha)];
+        textosDeNotas.push(nuevoArray);
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,";                            //https://stackoverflow.com/questions/14964035
+    textosDeNotas.forEach(function(rowArray) {
+        let row = rowArray.join(",");                                           //Transformamos esa matriz bidimensional en algo tipo CSV
+        csvContent += row + "\r\n";
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let anchorDescarga = document.getElementById("anchorDescargar");
+    anchorDescarga.setAttribute("href", encodedUri);                            //Para poder descargar el archivo creado hay que "adjuntarlo" a un anchor, el cuál no está visible en el DOM.
+    anchorDescarga.setAttribute("download", "productos.csv");
+    anchorDescarga.click(); // This will download the data file named "my_data.csv".
+
+};
+
+/******************************************************************************************************************************/
 
 
-// console.log(productos.findIndex(e => {e.precio == 650})
-
-let resultado = "seee";
-
-
-
-resultado = productos.findIndex(e => {Math.floor(e.precio) === 10429})
-
-console.log(resultado)
-
-//cargarProductoADom(0);
-/**************************************************************************************************/
-
-
-// console.clear();
-// console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
-// mostrarProductos(productos,false);                                                                  //Al cargar por primera vez mostramos los productos cargados al array de objetos.
+//console.clear();
+console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
+reconstruirDom()
 
