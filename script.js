@@ -111,6 +111,7 @@ botonAgregarProductos.addEventListener("click", agregarProductos);
 
 function agregarProductos() {
     let user = urlInput.value;
+    //user = "MLA-1117926574";
     urlInput.value = "";
     const inicioId = user.indexOf("MLA") +3;                    //+3 por el "MLA"
     console.log("Inicio: " + inicioId);
@@ -145,6 +146,19 @@ function agregarProductos() {
     }
 
     if(inicioId >= 0 && inicioId !== 2 && meliIdEncontrado.length>=9) {
+        //Verificamos que el producto ingresado no esté actualmente cargado; para eso lo buscamos y esperamos hallar "undefined" ya que no encuentra nada, si encontramos un objeto, alertamos con swal descartamos la entrada.
+        let yaSeEncuentra = productos.find( e => e.idMeli == ("MLA-" + meliIdEncontrado));
+        console.log("ya se encuentra: " + yaSeEncuentra);
+        if(yaSeEncuentra !== undefined) {
+            setTimeout(() => {                                                          //Si no lo ejecutamos así (cargandolo al stack con tiempo 0), por alguna razón el Swal entra siempre en el .then y el modal desaparece instantáneamente.
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Ups!',
+                    text: 'Este producto ya se encuentra cargado.',
+                  })
+              },0);
+            return;
+        }
         productos.push(new Producto("MLA-"+meliIdEncontrado,"titulo",Math.floor(Math.random()*1000),false,new Date()));
         //productos.reverse();
         notificaciones.push(new Notificacion(new Date(),"Nuevo producto agregado!"));
@@ -232,13 +246,14 @@ function cargarNotificacionADom(objRecibido) {
     notificacionesContenedor.innerHTML += `
         <div><button onclick="borrarNotificacion('${notificaciones.indexOf(objRecibido)}');">${deleteSvg}</button><span>${obtenerFechaFormateada(objRecibido.fecha)} - ${objRecibido.descripcion}</span></div>
     `;
+
 }
 
 function cargarProductoADom(objRecibido) {
     let productosContenedor = document.getElementById("productosContenedor");
 
     let productoAgregar = `
-    <div class="productos__individual" draggable="true">
+    <div class="productos__individual">
         <div class="superior">
             <div class="identificador">
             <span>${objRecibido.idMeli}</span>
@@ -344,7 +359,7 @@ function presupuesto() {
             document.getElementById("productosContenedor").innerHTML = "";          //Eliminamos los productos para mostrar sólo los que alcanza el presupuesto.
             let indice = 0;
             let costoParcialCarrito = 0;
-            let mensajeParaUsuario = "";
+            //let mensajeParaUsuario = "";
 
             do {                                                                                    //Hacemos un do-while en lugar de while ya que alcana para almenos el primer producto (escenario 1).
                 costoParcialCarrito += productos[indice].precio;
@@ -432,19 +447,30 @@ window.addEventListener('keydown', function (e) {
 console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
 reconstruirDom();
 
-
 // Toastify({
 //     text: "This is a toast",
-//     duration: 1500,
-//     destination: "https://github.com/apvarun/toastify-js",
-//     newWindow: true,
-//     close: true,
-//     gravity: "top", // `top` or `bottom`
-//     position: "right", // `left`, `center` or `right`
-//     stopOnFocus: true, // Prevents dismissing of toast on hover
-//     style: {
-//       background: "linear-gradient(to right, #00b09b, #96c93d)",
-//     },
-//     onClick: function(){} // Callback after click
-//   }).showToast();
+//     duration: 3000
+//     }).showToast();
 
+function showToastiFy(status) {
+    Toastify({
+        text: status?"Producto activo!":"Producto Pausado",
+        duration: 15000,
+        destination: "https://github.com/apvarun/toastify-js",
+        newWindow: true,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: status?"linear-gradient(to right, #00b09b, #96c93d)":"linear-gradient(to right, red, violet)",
+        },
+        offset: {
+            x: 0, // horizontal axis - can be a number or a string indicating unity. eg: '2em'
+            y: "100px" // vertical axis - can be a number or a string indicating unity. eg: '2em'
+          },
+        //onClick: function(){} // Callback after click
+      }).showToast();
+}
+
+//showToastiFy(true);
