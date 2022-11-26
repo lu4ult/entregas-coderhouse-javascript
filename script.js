@@ -168,7 +168,7 @@ function agregarProductos() {
 
 function llamarApiMeli(idMeli) {
     let idMeliApi = idMeli.replace("-","");
-    console.log("llamando: " + idMeliApi);
+    //console.log("llamando: " + idMeliApi);
     fetch('https://api.mercadolibre.com/items/'+idMeliApi)
     .then(response => response.json())
     .then(data => {
@@ -190,7 +190,7 @@ function llamarApiMeli(idMeli) {
         //acá comparar el estado de cada objeto con la respuesta de la API y hacer lo que corresonda.
 
 
-        console.log(titulo + "-" + precio  + "-" + estado);
+        //console.log(titulo + "-" + precio  + "-" + estado);
 
     })
 
@@ -337,13 +337,6 @@ function reconstruirDom() {
         botonNotificaciones.classList.remove("recentlyUpdated");
         botonNotificaciones.classList.add("recentlyUpdatedRemoved");
     }, 500);
-
-
-    setTimeout(() => {
-        productos.forEach(e => {
-            setTimeout(() => {llamarApiMeli(e.idMeli)},Math.floor(200+Math.random()*3000))
-        })
-    },0);
 }
 
 let botonPresupuesto = document.getElementById("botonPresupuesto");
@@ -487,11 +480,23 @@ window.addEventListener('keydown', function (e) {
 });
 /******************************************************************************************************************************/
 
-
-
-//console.clear();
+console.clear();
 console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
 reconstruirDom();
+
+productos.forEach(e => {
+    llamarApiMeli(e.idMeli);
+});
+
+setInterval(() => {
+    console.log(".")
+    productos.forEach(e => {
+        setTimeout(() => {llamarApiMeli(e.idMeli)},Math.floor(200+Math.random()*3000))
+    })
+},1*60*1000);
+
+//En el primer inicio llamamos a la API ni bien carga la página para que se muestre actualizado todo, y colocamos para que una vez por minuto llame a actualizar.
+
 
 // Toastify({
 //     text: "This is a toast",
