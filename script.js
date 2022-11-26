@@ -166,6 +166,37 @@ function agregarProductos() {
     }
 }
 
+function llamarApiMeli(idMeli) {
+    let idMeliApi = idMeli.replace("-","");
+    console.log("llamando: " + idMeliApi);
+    fetch('https://api.mercadolibre.com/items/'+idMeliApi)
+    .then(response => response.json())
+    .then(data => {
+        let titulo = data['title'];
+        let precio = data['price'];
+        let estado = data['status']==='active'?true:false;
+        let imgUrl = data ['pictures'][0]['secure_url'];
+
+        document.getElementById(idMeli+"-title").innerText = titulo;
+        document.getElementById(idMeli+"-price").innerText = precio;
+        document.getElementById(idMeli+"-img").src = imgUrl;
+
+        document.getElementById(idMeli+"-status").innerText = estado?"Activo":"Pausado";
+
+        //Ejemplo: si el producto está activo hay que agregar class="estado-true" y quitar class="estado-false", por eso simplemente quitamos la clase negando el estado y la agregamos como esá el booleano.
+        document.getElementById(idMeli+"-status").classList.remove("estado-" + String(!estado));
+        document.getElementById(idMeli+"-status").classList.add("estado-" + String(estado));
+
+        //acá comparar el estado de cada objeto con la respuesta de la API y hacer lo que corresonda.
+
+
+        console.log(titulo + "-" + precio  + "-" + estado);
+
+    })
+
+}
+
+/*
 async function getImgUrlfromMeli(id_meli){
     //console.log("ID: " + id_meli);
 
@@ -177,13 +208,14 @@ async function getImgUrlfromMeli(id_meli){
     const img = data['secure_thumbnail'];
     //console.log(img);
 
-    let imgSrc = document.getElementById("img-"+id_meli);
+    let imgSrc = document.getElementById(id_meli+"-img");
     imgSrc.src = img;
 
     //return url;
     //return "https://http2.mlstatic.com/D_709442-MLA32447175586_102019-I.jpg";
     return img;
 }
+*/
 
 
 
@@ -264,16 +296,18 @@ function cargarProductoADom(objRecibido) {
         </div>
         <div class="principal">
             <span class="fecha">${obtenerFechaFormateada(objRecibido.fecha)}</span>
-            <a class="titulo" target="_blank" href="https://articulo.mercadolibre.com.ar/${objRecibido.idMeli}">${objRecibido.titulo}</a>
-            <img src="" id="img-${objRecibido.idMeli}">
-            <span class="precio">${objRecibido.precio}</span>
+            <a class="titulo" id="${objRecibido.idMeli}-title" target="_blank" href="https://articulo.mercadolibre.com.ar/${objRecibido.idMeli}">${objRecibido.titulo}</a>
+            <div class="img-container">
+            <img src="" id="${objRecibido.idMeli}-img">
+            </div>
+            <span class="precio" id="${objRecibido.idMeli}-price">${objRecibido.precio}</span>
         </div>
         <div class="abajo">
-            <span class="estado estado-${objRecibido.estado}">Pausado</span>
+            <span class="estado estado-${objRecibido.estado}" id="${objRecibido.idMeli}-status" + ">Pausado</span>
         </div>
     </div>
     `;
-    getImgUrlfromMeli(objRecibido.idMeli);
+    //getImgUrlfromMeli(objRecibido.idMeli);
     productosContenedor.innerHTML += productoAgregar;
 }
 
@@ -298,6 +332,18 @@ function reconstruirDom() {
 
     localStorage.setItem("tenes-stock_productos",JSON.stringify(productos));
     localStorage.setItem("tenes-stock_notificaciones",JSON.stringify(notificaciones));
+
+    setTimeout(() => {
+        botonNotificaciones.classList.remove("recentlyUpdated");
+        botonNotificaciones.classList.add("recentlyUpdatedRemoved");
+    }, 500);
+
+
+    setTimeout(() => {
+        productos.forEach(e => {
+            setTimeout(() => {llamarApiMeli(e.idMeli)},Math.floor(200+Math.random()*3000))
+        })
+    },0);
 }
 
 let botonPresupuesto = document.getElementById("botonPresupuesto");
@@ -474,3 +520,5 @@ function showToastiFy(status) {
 }
 
 //showToastiFy(true);
+
+//llamarApiMeli("MLA-1117926574");

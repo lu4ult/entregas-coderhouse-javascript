@@ -246,9 +246,18 @@ body main .productos .productos__individual .principal .titulo {
   font-size: 1.5rem;
   text-align: center;
 }
-body main .productos .productos__individual .principal img {
-  z-index: 10;
-  width: 70%;
+body main .productos .productos__individual .principal .img-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-height: 200px;
+}
+body main .productos .productos__individual .principal .img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: scale-down;
   mix-blend-mode: multiply;
 }
 body main .productos .productos__individual .principal .precio::after {
