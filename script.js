@@ -1,16 +1,18 @@
 
 /**********************     VARIABLES GENERALES Y OBJETOS      ***********************************************************************************/
+let produccion = "https://friendly-bublanina-3c840e.netlify.app/" === window.location.href || "https://lu4ult.github.io/entregas-coderhouse-javascript/" === window.location.href;
 
 let editSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.8 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"/></svg>'
 let deleteSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M175 175C184.4 165.7 199.6 165.7 208.1 175L255.1 222.1L303 175C312.4 165.7 327.6 165.7 336.1 175C346.3 184.4 346.3 199.6 336.1 208.1L289.9 255.1L336.1 303C346.3 312.4 346.3 327.6 336.1 336.1C327.6 346.3 312.4 346.3 303 336.1L255.1 289.9L208.1 336.1C199.6 346.3 184.4 346.3 175 336.1C165.7 327.6 165.7 312.4 175 303L222.1 255.1L175 208.1C165.7 199.6 165.7 184.4 175 175V175zM512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48z"/></svg>'
 
 class Producto {
-    constructor(idMeli,titulo,precio,estado, fecha) {
-        this.idMeli = idMeli;                                                                      //Como identificador del producto usaremos directamente el identificador de la publicación que nos da Mercadolibre.
+    constructor(idMeli,titulo,precio,estado, fecha, imgUrl) {
+        this.idMeli = String(idMeli);                                                                      //Como identificador del producto usaremos directamente el identificador de la publicación que nos da Mercadolibre.
         this.titulo = titulo.toLowerCase();
         this.precio = parseInt(precio);
-        this.estado = estado;
+        this.estado = Boolean(estado);
         this.fecha = fecha;
+        this.imgUrl = imgUrl;
     }
 
     //método:                                                                                       //A implementar en un futuro
@@ -35,13 +37,13 @@ class Notificacion {
 
 //Agregamos de entrada algunos productos para que haya algo de contenido.
 let productosBase =[
-                new Producto("MLA-818528606","RAI",10429,false, new Date()),
-                new Producto("MLA-900797325","Bitcoin Ticker",6869,false, new Date()),
-                new Producto("MLA-1117926574","Timbre Programable",30000,true, new Date()),
-                new Producto("MLA-818539416","Adaptador programador esp-01",2659,true, new Date()),
-                new Producto("MLA-1167147839","Dimmer Módulo Desarrollo",11859,false, new Date()),
-                new Producto("MLA-918716646","Bitcoin Ticker Grande",18000,true, new Date()),
-                new Producto("MLA-818527058","Dimmer Control Con Arduino C/cruce Por Cero",4559,false, new Date())
+                new Producto("MLA-818528606","RAI",10429,false, new Date(),"ninguna"),
+                new Producto("MLA-900797325","Bitcoin Ticker",6869,false, new Date(),"ninguna"),
+                new Producto("MLA-1117926574","Timbre Programable",30000,true, new Date(),"ninguna"),
+                new Producto("MLA-818539416","Adaptador programador esp-01",2659,true, new Date(),"ninguna"),
+                new Producto("MLA-1167147839","Dimmer Módulo Desarrollo",11859,false, new Date(),"ninguna"),
+                new Producto("MLA-918716646","Bitcoin Ticker Grande",18000,true, new Date(),"ninguna"),
+                new Producto("MLA-818527058","Dimmer Control Con Arduino C/cruce Por Cero",4559,false, new Date(),"nada aqui")
                 ];
 
 let productos = [];
@@ -70,7 +72,7 @@ if(dataLocal === null) {
 
 let productosLeidosLocal = JSON.parse(localStorage.getItem("tenes-stock_productos"));
 productosLeidosLocal.forEach(e => {
-    productos.push(new Producto(e.idMeli,e.titulo,e.precio,e.estado,new Date(e.fecha)));
+    productos.push(new Producto(e.idMeli,e.titulo,e.precio,e.estado,new Date(e.fecha),e.imgUrl));
 });
 
 let notificacionesLeidasLocal = JSON.parse(localStorage.getItem("tenes-stock_notificaciones"));
@@ -168,32 +170,82 @@ function agregarProductos() {
 
 function llamarApiMeli(idMeli) {
     let idMeliApi = idMeli.replace("-","");
-    //console.log("llamando: " + idMeliApi);
+    console.log("llamando: " + idMeliApi);
     fetch('https://api.mercadolibre.com/items/'+idMeliApi)
     .then(response => response.json())
     .then(data => {
-        let titulo = data['title'];
-        let precio = data['price'];
-        let estado = data['status']==='active'?true:false;
-        let imgUrl = data ['pictures'][0]['secure_url'];
 
-        document.getElementById(idMeli+"-title").innerText = titulo;
-        document.getElementById(idMeli+"-price").innerText = precio;
-        document.getElementById(idMeli+"-img").src = imgUrl;
+        /* Recolección de data de la API */
+        let _titulo = "";
+        _titulo += String(data['title']);
+        let _precio = data['price'];
+        let _estado = data['status']==='active'?true:false;
+        let _imgUrl = data ['pictures'][0]['secure_url'];
 
-        document.getElementById(idMeli+"-status").innerText = estado?"Activo":"Pausado";
+        /* Manipulación del DOM en función de la data de la API */
+
+
+        //document.getElementById(idMeli+"-img").src = _imgUrl;
+/*
+        document.getElementById(idMeli+"-title").innerText = _titulo;
+        document.getElementById(idMeli+"-price").innerText = _precio;
+        document.getElementById(idMeli+"-status").innerText = _estado?"Activo":"Pausado";
 
         //Ejemplo: si el producto está activo hay que agregar class="estado-true" y quitar class="estado-false", por eso simplemente quitamos la clase negando el estado y la agregamos como esá el booleano.
-        document.getElementById(idMeli+"-status").classList.remove("estado-" + String(!estado));
-        document.getElementById(idMeli+"-status").classList.add("estado-" + String(estado));
+        document.getElementById(idMeli+"-status").classList.remove("estado-" + String(!_estado));
+        document.getElementById(idMeli+"-status").classList.add("estado-" + String(_estado));
+*/
+        /* Análisis y comparación de data de objetos y respuesta de la API */
 
-        //acá comparar el estado de cada objeto con la respuesta de la API y hacer lo que corresonda.
+
+        //aca estoy
+
+        let objActualIndice = productos.findIndex(e => e.idMeli === idMeli);                                //Ya que recibimos el ID pero no el objeto, tenemos que encontrar el objeto en el array y capturarlo
+        let objetoActual = productos[objActualIndice];
+        //console.log(objetoActual);
+        //console.log(objActualIndice + ": " + objetoActual.titulo + " - " + idMeli);
+
+        objetoActual.titulo = _titulo;
+        objetoActual.precio = _precio;                           //TODO: parsear
+        objetoActual.imgUrl = _imgUrl;
+        //Ahora si comparamos entre el estado actual del objeto y la respuesta de la API.
+
+        if(_estado !== objetoActual.estado) {
+            console.log("");
+            //console.log(typeof(_estado) + "-" + typeof(objetoActual.estado));
+            //console.log(_estado + "-" + objetoActual.estado)
+            console.log("cambio de estado: " + objetoActual.titulo);
+            //notificaciones.push(new Notificacion(new Date(),_titulo + " esta ahora " + _estado?"activo":"pausado"));
+
+            //TODO: ver cómo refactorizar
+            let str = _titulo;
+            str += " está ahora ";
+            str += _estado?"activo":"pausado";
+            str += "!";
+            notificaciones.push(new Notificacion(new Date(),str));
+
+
+            setTimeout(() => {
+                console.log("activando")
+                reconstruirDom()
+            },0);
+
+            setTimeout(() => {
+                showToastiFy(_estado, str);
+            },100);
+            //objetoActual.estado = _estado;
+        }
+        objetoActual.estado = _estado;
+
+        // if(precio != objetoActual.precio) {
+        //     console.log("el precio estaba distinto");
+        //     reconstruirDom();
+        // }
 
 
         //console.log(titulo + "-" + precio  + "-" + estado);
 
     })
-
 }
 
 /*
@@ -260,11 +312,15 @@ function borrarProducto(_id) {
     console.log(papelera);
 }
 
+//TODO: chequear que todos los setTimeout sean realmente necesarios
+
 function borrarNotificacion(indice) {
     notificaciones.splice(indice,1);
 
-    document.getElementById("notificacionesContenedor").innerHTML = "";         //No usamos reconstruirDom todo ya que sino "parpadean" los productos.
-    notificaciones.forEach(e => {cargarNotificacionADom(e);});
+    //document.getElementById("notificacionesContenedor").innerHTML = "";         //No usamos reconstruirDom todo ya que sino "parpadean" los productos.
+    //notificaciones.forEach(e => {cargarNotificacionADom(e);});
+
+    reconstruirDom();
 
     if(notificaciones.length === 0) {
         document.getElementById("notificacionesContenedor").innerHTML ="<strong>Sin Notificaciones</strong>"
@@ -298,12 +354,12 @@ function cargarProductoADom(objRecibido) {
             <span class="fecha">${obtenerFechaFormateada(objRecibido.fecha)}</span>
             <a class="titulo" id="${objRecibido.idMeli}-title" target="_blank" href="https://articulo.mercadolibre.com.ar/${objRecibido.idMeli}">${objRecibido.titulo}</a>
             <div class="img-container">
-            <img src="" id="${objRecibido.idMeli}-img">
+            <img src="${objRecibido.imgUrl}" id="${objRecibido.idMeli}-img">
             </div>
             <span class="precio" id="${objRecibido.idMeli}-price">${objRecibido.precio}</span>
         </div>
         <div class="abajo">
-            <span class="estado estado-${objRecibido.estado}" id="${objRecibido.idMeli}-status" + ">Pausado</span>
+            <span class="estado estado-${objRecibido.estado}" id="${objRecibido.idMeli}-status" + ">${objRecibido.estado?"activo":"pausado"}</span>
         </div>
     </div>
     `;
@@ -314,11 +370,12 @@ function cargarProductoADom(objRecibido) {
 
 
 function reconstruirDom() {
+    console.log("reconstruyendo dom")
     document.getElementById("productosContenedor").innerHTML = "";
     document.getElementById("notificacionesContenedor").innerHTML = "";
 
     //notificaciones.reverse();
-    productos.sort((a,b) => b.fecha - a.fecha);                 //Ordenamos los productos por fecha en que se agregaron.
+   // productos.sort((a,b) => b.fecha - a.fecha);                 //Ordenamos los productos por fecha en que se agregaron.
     notificaciones.sort((a,b) => b.fecha - a.fecha);
 
     productos.forEach(e => {
@@ -333,6 +390,7 @@ function reconstruirDom() {
     localStorage.setItem("tenes-stock_productos",JSON.stringify(productos));
     localStorage.setItem("tenes-stock_notificaciones",JSON.stringify(notificaciones));
 
+    //TODO: analizar si realmente tiene que hacerlo para evitar agregar al stack innecesariamente: utilizar querySelector(clase) y chequear si es undefined
     setTimeout(() => {
         botonNotificaciones.classList.remove("recentlyUpdated");
         botonNotificaciones.classList.add("recentlyUpdatedRemoved");
@@ -478,22 +536,57 @@ window.addEventListener('keydown', function (e) {
         document.getElementById("botonPresupuesto").click();
     }
 });
+
+
+/**********************     SIMULACION      ***********************************************************************************/
+function simulacion() {
+    Swal.fire({
+        title: 'Simular?',
+        text: "Para simular y poder ver el funcionamiento de esta página, alteraremos el estado de los productos de manera aleatoria, y podrá ver cómo funciona el sistema.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, continuar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+            //console.log(productos[0]);
+            //productos[0].estado = false;
+            productos.forEach(e => {
+                let randomStatus = Boolean(Math.floor(Math.random()*10) %2);    //Generamos un número aleatorio entre 0 y 10, obtenemos el módulo y lo casteamos para obtener un false o true random.
+                e.estado = randomStatus;
+            });
+            //console.log(productos[0]);
+            reconstruirDom();
+        }
+      });
+
+}
+
+
 /******************************************************************************************************************************/
 
 console.clear();
 console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
+console.log("Produccion: " + produccion);
+
+
+if(produccion) {
+    productos.forEach(e => {
+        llamarApiMeli(e.idMeli);
+    });
+}
+
 reconstruirDom();
 
-productos.forEach(e => {
-    llamarApiMeli(e.idMeli);
-});
-
 setInterval(() => {
-    console.log(".")
+    //console.log(".")
+    //console.clear();
     productos.forEach(e => {
-        setTimeout(() => {llamarApiMeli(e.idMeli)},Math.floor(200+Math.random()*3000))
-    })
-},1*60*1000);
+        setTimeout(() => {llamarApiMeli(e.idMeli)},Math.floor(10+Math.random()*300))
+    });
+    //reconstruirDom();
+},1*10*1000);
 
 //En el primer inicio llamamos a la API ni bien carga la página para que se muestre actualizado todo, y colocamos para que una vez por minuto llame a actualizar.
 
@@ -503,12 +596,13 @@ setInterval(() => {
 //     duration: 3000
 //     }).showToast();
 
-function showToastiFy(status) {
+function showToastiFy(status, titulo) {
+    console.log("Toastify: " + status + "-" + titulo);
     Toastify({
-        text: status?"Producto activo!":"Producto Pausado",
+        text: titulo,
         duration: 15000,
-        destination: "https://github.com/apvarun/toastify-js",
-        newWindow: true,
+        //destination: "https://github.com/apvarun/toastify-js",
+        //newWindow: true,
         close: true,
         gravity: "top", // `top` or `bottom`
         position: "right", // `left`, `center` or `right`
