@@ -318,20 +318,8 @@ function findManual(id) {
 
 function borrarProducto(_id) {
     //let indiceProductoBuscado = productos.findIndex(e => {e.idMeli == _id})
-
-    let botonNotificaciones = document.getElementById("botonNotificaciones");
-    botonNotificaciones.classList.add("recentlyUpdated");
-    botonNotificaciones.classList.remove("recentlyUpdatedRemoved");
-
-    setTimeout(() => {
-        botonNotificaciones.classList.remove("recentlyUpdated");
-        botonNotificaciones.classList.add("recentlyUpdatedRemoved");
-    }, 500);
-
     let indiceProductoBuscado = findManual(_id);
-    console.log("Indice encontrado: " + indiceProductoBuscado)
-
-    //notificaciones.push(new Notificacion(new Date(),productos[indiceProductoBuscado].titulo + " eliminado."));
+    //console.log("Indice encontrado: " + indiceProductoBuscado)
 
     papelera.push(productos[indiceProductoBuscado]);
     document.getElementById("botonPapelera").classList.remove("oculto");
@@ -655,7 +643,3 @@ function showToastiFy(status, titulo) {
         //onClick: function(){} // Callback after click
       }).showToast();
 }
-
-//showToastiFy(true);
-
-//llamarApiMeli("MLA-1117926574");
