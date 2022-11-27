@@ -1,7 +1,8 @@
 
 /**********************     VARIABLES GENERALES Y OBJETOS      ***********************************************************************************/
 let produccion = "https://friendly-bublanina-3c840e.netlify.app/" === window.location.href || "https://lu4ult.github.io/entregas-coderhouse-javascript/" === window.location.href;
-let emailDelUsuario = "lu4ult@gmail.com";
+let configuracionUsuario;
+//let emailDelUsuario = "lu4ult@gmail.com";
 
 
 let editSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.8 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"/></svg>'
@@ -36,6 +37,15 @@ class Notificacion {
     }
 }
 
+class userConfig {
+    constructor(notificPopUp,notificEmail,email,listOrder) {
+        this.notificPopUp = notificPopUp;                                                                      //Como identificador del producto usaremos directamente el identificador de la publicación que nos da Mercadolibre.
+        this.notificEmail = notificEmail;
+        this.email = email;
+        this.listOrder = listOrder;
+    }
+}
+
 
 //Agregamos de entrada algunos productos para que haya algo de contenido.
 let productosBase =[
@@ -66,11 +76,16 @@ if(dataLocal === null) {
         cantidadRandom--;
     }while(cantidadRandom);
 
-    //notificaciones.push();
     localStorage.setItem("tenes-stock_productos",JSON.stringify(arrayRandomGenerado));
     localStorage.setItem("tenes-stock_notificaciones",JSON.stringify([new Notificacion(new Date(),"Hola! Bienvenido")]));
     }
 
+let configuracionUsuarioLocal = localStorage.getItem("tenes-stock_configuracion-usuario");
+if(configuracionUsuarioLocal === null) {
+    console.log("Creando configuracion del usuario")
+    localStorage.setItem("tenes-stock_configuracion-usuario",JSON.stringify([new userConfig(true,false,"lu4ult@gmail.com",0)]));
+    }
+/******************/
 
 let productosLeidosLocal = JSON.parse(localStorage.getItem("tenes-stock_productos"));
 productosLeidosLocal.forEach(e => {
@@ -81,6 +96,9 @@ let notificacionesLeidasLocal = JSON.parse(localStorage.getItem("tenes-stock_not
 notificacionesLeidasLocal.forEach(e => {
     notificaciones.push(new Notificacion(new Date(e.fecha),e.descripcion));
 });
+
+let userConfigAsJson = JSON.parse(localStorage.getItem("tenes-stock_configuracion-usuario"));
+configuracionUsuario = new userConfig(userConfigAsJson[0]['notificPopUp'],userConfigAsJson[0]['notificEmail'],userConfigAsJson[0]['email']);
 
 
 /**********************     FUNCIONES GENERALES      ***********************************************************************************/
@@ -165,7 +183,7 @@ function agregarProductos() {
         }
         productos.push(new Producto("MLA-"+meliIdEncontrado,"titulo",Math.floor(Math.random()*1000),false,new Date()));
         //productos.reverse();
-        notificaciones.push(new Notificacion(new Date(),"Nuevo producto agregado!"));
+        //notificaciones.push(new Notificacion(new Date(),"Nuevo producto agregado!"));
         reconstruirDom();
     }
 }
@@ -217,7 +235,6 @@ function llamarApiMeli(idMeli) {
             //console.log(typeof(_estado) + "-" + typeof(objetoActual.estado));
             //console.log(_estado + "-" + objetoActual.estado)
             console.log("cambio de estado: " + objetoActual.titulo);
-            //notificaciones.push(new Notificacion(new Date(),_titulo + " esta ahora " + _estado?"activo":"pausado"));
 
             //TODO: ver cómo refactorizar
             let str = _titulo;
@@ -232,18 +249,25 @@ function llamarApiMeli(idMeli) {
                 reconstruirDom()
             },0);
 
-            setTimeout(() => {
-                showToastiFy(_estado, str);
-            },100);
+            if(configuracionUsuario.notificPopUp) {
+                setTimeout(() => {
+                    showToastiFy(_estado, str);
+                },10);
+            }
 
-            //sendEmail("lautatourn@gmail.com",_titulo,_estado?"activo":"pausado");
-            
-            emailjs.send('service_k3tj0b9', 'template_gqsipms', {destinatario:emailDelUsuario,producto:_titulo,estado:_estado?"activo":"pausado"})
-            .then(function(response) {
-                console.log('Email enviado correctamente!', response.status, response.text);
-            }, function(error) {
-                console.log('Email fallo...', error);
-            });
+            if(configuracionUsuario.notificEmail) {
+                console.log("enviando email");
+                emailjs.send('service_k3tj0b9', 'template_gqsipms', {destinatario:configuracionUsuario.email,producto:_titulo,estado:_estado?"activo":"pausado"})
+                .then(function(response) {
+                    console.log('Email enviado correctamente!', response.status, response.text);
+                }, function(error) {
+                    console.log('Email fallo...', error);
+                });
+
+            }
+            else {
+                console.log("email no habilitado");
+            }
             
             //objetoActual.estado = _estado;
         }
@@ -307,7 +331,7 @@ function borrarProducto(_id) {
     let indiceProductoBuscado = findManual(_id);
     console.log("Indice encontrado: " + indiceProductoBuscado)
 
-    notificaciones.push(new Notificacion(new Date(),productos[indiceProductoBuscado].titulo + " eliminado."));
+    //notificaciones.push(new Notificacion(new Date(),productos[indiceProductoBuscado].titulo + " eliminado."));
 
     papelera.push(productos[indiceProductoBuscado]);
     document.getElementById("botonPapelera").classList.remove("oculto");
@@ -420,8 +444,6 @@ inputPresupuesto.onfocus = () => {
 
 botonPresupuesto.addEventListener("click",presupuesto);
 function presupuesto() {
-    let productosSegunPresupuesto = [];
-
     let presupuestoUsuario = inputPresupuesto.value;
     if(isNaN(presupuestoUsuario)) {
         inputPresupuesto.value = "Ingrese sólo números";
@@ -444,6 +466,7 @@ function presupuesto() {
     //Escenario 1:
     if(presupuestoUsuario < productos[0].precio) {                                                  //Comparamos contra el primer elemento del array ya que ya se ordenó.
         document.getElementById("productosContenedor").innerHTML = "";
+        cargarProductoADom(productos[0]);
         inputPresupuesto.classList.add("input-error");
         inputPresupuesto.value = "Necesita "+ (productos[0].precio - presupuestoUsuario) + "$ para comprar al menos " + productos[0].titulo;
         console.log("Necesita "+ (productos[0].precio - presupuestoUsuario) + "$ para comprar al menos " + productos[0].titulo);
@@ -464,11 +487,11 @@ function presupuesto() {
 
         //Escenario 3;
         else {
-            //console.log("escenario 3");
+            console.log("escenario 3");
             document.getElementById("productosContenedor").innerHTML = "";          //Eliminamos los productos para mostrar sólo los que alcanza el presupuesto.
             let indice = 0;
             let costoParcialCarrito = 0;
-            //let mensajeParaUsuario = "";
+            let mensajeParaUsuario = "";
 
             do {                                                                                    //Hacemos un do-while en lugar de while ya que alcana para almenos el primer producto (escenario 1).
                 costoParcialCarrito += productos[indice].precio;
@@ -476,7 +499,7 @@ function presupuesto() {
                 mensajeParaUsuario += ", "+productos[indice].titulo;
                 //productosSegunPresupuesto.push(productos[indice]);
                 cargarProductoADom(productos[indice]);
-                console.log(productosSegunPresupuesto);
+                //console.log(productosSegunPresupuesto);
                 indice++;
             }while((costoParcialCarrito + productos[indice].precio) <= presupuestoUsuario);         //Mientras que el costo del carrito sumado al siguiente producto sea menor al presupuesto.
             inputPresupuesto.classList.add("input-success")
@@ -554,7 +577,7 @@ window.addEventListener('keydown', function (e) {
 function simulacion() {
     Swal.fire({
         title: 'Simular?',
-        text: "Para simular y poder ver el funcionamiento de esta página, alteraremos el estado de los productos de manera aleatoria, y podrá ver cómo funciona el sistema.",
+        text: "Para simular y poder ver el funcionamiento de esta página, alteraremos el estado de los productos de manera aleatoria, y podrá ver cómo funciona el sistema. Luego espere 10 segundos a que se actualice.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -577,7 +600,7 @@ function simulacion() {
 
 /******************************************************************************************************************************/
 
-console.clear();
+//console.clear();
 console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
 console.log("Produccion: " + produccion);
 
@@ -590,14 +613,18 @@ if(produccion) {
 
 reconstruirDom();
 
-setInterval(() => {
-    //console.log(".")
-    //console.clear();
-    productos.forEach(e => {
-        setTimeout(() => {llamarApiMeli(e.idMeli)},Math.floor(10+Math.random()*300))
-    });
-    //reconstruirDom();
-},1*10*1000);
+if(!produccion) {
+    setInterval(() => {
+        //console.log(".")
+        //console.clear();
+        productos.forEach(e => {
+            setTimeout(() => {llamarApiMeli(e.idMeli)},Math.floor(10+Math.random()*300))
+        });
+        //reconstruirDom();
+    },1*10*1000);
+
+}
+
 
 //En el primer inicio llamamos a la API ni bien carga la página para que se muestre actualizado todo, y colocamos para que una vez por minuto llame a actualizar.
 

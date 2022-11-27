@@ -39,24 +39,22 @@ body header {
   justify-content: space-between;
 }
 body header .logo {
-  width: 300px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  justify-content: left;
 }
 body header .logo img {
   width: 50px;
   aspect-ratio: 1;
 }
-body header .titulo {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 300px;
-}
 body header .navegacion {
   position: relative;
   display: flex;
   justify-content: right;
-  width: 300px;
+  gap: 1rem;
 }
 body header .navegacion button {
   cursor: pointer;
@@ -65,7 +63,6 @@ body header .navegacion button {
   background-color: inherit;
   outline: none;
   border: none;
-  margin: 0 1rem;
 }
 body header .navegacion button svg {
   width: 100%;
@@ -90,9 +87,6 @@ body header .navegacion #botonPapelera:hover::after {
   right: 5px;
   content: "Restaurar";
 }
-body header .navegacion #botonNotificaciones:hover svg {
-  fill: green;
-}
 body header .navegacion #botonNotificaciones:hover::after {
   position: absolute;
   top: 80px;
@@ -107,7 +101,6 @@ body header .navegacion #botonNotificaciones.recentlyUpdated svg {
   fill: red;
 }
 body header .navegacion #botonNotificaciones.recentlyUpdatedRemoved svg {
-  fill: #666666;
   transition: all 1s;
 }
 body header .navegacion #botonGeneradorRandom:hover::after {
@@ -127,7 +120,7 @@ body main {
 body main i {
   font-size: 3rem;
 }
-body main .agregarProductos, body main .presupuesto {
+body main .agregarProductos, body main .presupuesto, body main .simulacion {
   width: 80%;
   display: flex;
   flex-direction: column;
@@ -136,7 +129,7 @@ body main .agregarProductos, body main .presupuesto {
   margin: 1rem;
   padding: 1rem;
 }
-body main .agregarProductos input, body main .presupuesto input {
+body main .agregarProductos input, body main .presupuesto input, body main .simulacion input {
   font-family: inherit;
   font-size: 1rem;
   width: 100%;
@@ -146,19 +139,19 @@ body main .agregarProductos input, body main .presupuesto input {
   border: 1px solid #ccc;
   border-bottom: 1px solid blue;
 }
-body main .agregarProductos input.input-error, body main .presupuesto input.input-error {
+body main .agregarProductos input.input-error, body main .presupuesto input.input-error, body main .simulacion input.input-error {
   background-color: red;
   color: white;
   font-size: 1rem;
   font-weight: 600;
 }
-body main .agregarProductos input.input-success, body main .presupuesto input.input-success {
+body main .agregarProductos input.input-success, body main .presupuesto input.input-success, body main .simulacion input.input-success {
   background-color: green;
   color: white;
   font-size: 1rem;
   font-weight: 600;
 }
-body main .agregarProductos button, body main .presupuesto button {
+body main .agregarProductos button, body main .presupuesto button, body main .simulacion button {
   font-family: inherit;
   cursor: pointer;
   border: 2px solid green;
