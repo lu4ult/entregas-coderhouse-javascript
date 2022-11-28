@@ -385,7 +385,7 @@ body {
     }
 }
 
-.notificacionesContenedor {
+.notificacionesContenedor, .configuracionUsuarioContenedor {
     position: fixed;
     width: 40vw;
     height: auto;
@@ -403,6 +403,9 @@ body {
     flex-direction: column;
     padding: 0.5rem;
     box-shadow: 0px 0px 50px 5px rgba(0,0,0,0.6);
+}
+
+.notificacionesContenedor {
     div {
         width: 100%;
         height: 100%;
@@ -426,6 +429,57 @@ body {
         span {
             text-align: left;
         }
+    }
+}
+
+
+// .configuracionUsuarioContenedor {
+//     border: 3px solid blue;
+//     width: 40vw;
+//     @include centrarConFlex(1);
+// }
+
+.configuracionUsuarioContenedor {
+    @include centrarConFlex(1);
+    justify-content: start;
+    span {
+        padding-top: 3rem;
+    }
+
+
+    input[type=checkbox] {
+        border: 5px solid violet;
+        height: 20px;
+        aspect-ratio: 1;
+    }
+
+    input[type=email] {
+        width: 70%;
+        text-align: center;
+    }
+
+    .botonesOrdenContenedor {
+        width: 100%;
+        @include centrarConFlex(0);
+        justify-content: space-around;
+
+        button {
+            cursor: pointer;
+            background-color: inherit;
+            width: 100px;
+            aspect-ratio: 3/1;
+            box-shadow: 5px 5px black;
+            &:active {
+                transform: translate(5px,5px);
+            }
+
+            &:disabled {
+                cursor: initial;
+                box-shadow: none;
+                transform: translate(5px,5px);
+            }
+        }
+
     }
 }
 

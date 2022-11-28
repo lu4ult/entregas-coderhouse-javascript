@@ -302,7 +302,7 @@ body footer a {
   text-decoration: none;
 }
 
-.notificacionesContenedor {
+.notificacionesContenedor, .configuracionUsuarioContenedor {
   position: fixed;
   width: 40vw;
   height: auto;
@@ -319,6 +319,7 @@ body footer a {
   padding: 0.5rem;
   box-shadow: 0px 0px 50px 5px rgba(0, 0, 0, 0.6);
 }
+
 .notificacionesContenedor div {
   width: 100%;
   height: 100%;
@@ -342,6 +343,49 @@ body footer a {
 }
 .notificacionesContenedor div span {
   text-align: left;
+}
+
+.configuracionUsuarioContenedor {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  justify-content: start;
+}
+.configuracionUsuarioContenedor span {
+  padding-top: 3rem;
+}
+.configuracionUsuarioContenedor input[type=checkbox] {
+  border: 5px solid violet;
+  height: 20px;
+  aspect-ratio: 1;
+}
+.configuracionUsuarioContenedor input[type=email] {
+  width: 70%;
+  text-align: center;
+}
+.configuracionUsuarioContenedor .botonesOrdenContenedor {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  justify-content: space-around;
+}
+.configuracionUsuarioContenedor .botonesOrdenContenedor button {
+  cursor: pointer;
+  background-color: inherit;
+  width: 100px;
+  aspect-ratio: 3/1;
+  box-shadow: 5px 5px black;
+}
+.configuracionUsuarioContenedor .botonesOrdenContenedor button:active {
+  transform: translate(5px, 5px);
+}
+.configuracionUsuarioContenedor .botonesOrdenContenedor button:disabled {
+  cursor: initial;
+  box-shadow: none;
+  transform: translate(5px, 5px);
 }
 
 .oculto {

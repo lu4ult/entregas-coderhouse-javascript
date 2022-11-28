@@ -49,6 +49,20 @@
       <article>De momento y hasta que veamos en clase el consumo de la API los datos como el título, precio y otros están incompletos o son aleatorios, pero el resto de las</article>
       <article>funciones de la página (como agregar un producto según la URL funcionan).</article>
 
+      <div class="notificacionesContenedor oculto" id="notificacionesContenedor"><strong>Sin Notificaciones!</strong></div>
+      <div class="configuracionUsuarioContenedor oculto" id="configuracionUsuarioContenedor">
+        <span>Notificaciones Emergentes</span>
+        <input type="checkbox" id="notificPopUp">
+        <span>Notificaciones por Email</span>
+        <input type="checkbox" id="notificEmail">
+        <input type="email" value="email@gmail.com" id="userEmail">
+        <span>Orden de productos</span>
+        <div class="botonesOrdenContenedor">
+          <button class="botSetOrder" onclick="setListOrder(0)" id="botonOrder0">Fecha</button>
+          <button class="botSetOrder" onclick="setListOrder(1)" id="botonOrder1">Título</button>
+          <button class="botSetOrder" onclick="setListOrder(2)" id="botonOrder2">Precio</button>
+        </div>
+      </div>
       <div class="simulacion">
         <button onclick="simulacion();">Simulacion</button>
       </div>
@@ -57,8 +71,6 @@
         <input type="text" id="urlInput" value="Copia aquí la URL del producto de MercadoLibre!">
         <button id="botonAgregarProductos">Agregar productos!</button>
       </div>
-
-      <div class="notificacionesContenedor oculto" id="notificacionesContenedor"><strong>Sin Notificaciones!</strong></div>
 
       <div class="presupuesto">
         <input type="text" id="presupuestoInput" value="Ingresar aquí el valor de presupuesto.">

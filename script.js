@@ -2,6 +2,7 @@
 /**********************     VARIABLES GENERALES Y OBJETOS      ***********************************************************************************/
 let produccion = "https://friendly-bublanina-3c840e.netlify.app/" === window.location.href || "https://lu4ult.github.io/entregas-coderhouse-javascript/" === window.location.href;
 let configuracionUsuario;
+//let comoOrdernarProductos = 3;
 //let emailDelUsuario = "lu4ult@gmail.com";
 
 
@@ -18,16 +19,9 @@ class Producto {
         this.imgUrl = imgUrl;
     }
 
-    //método:                                                                                       //A implementar en un futuro
-    // vender(cantidad) {
-    //     this.stock = this.stock + cantidad;
-    // }
-    // activar() {
-    //     this.estado = true;
-    // }
-    // pausar() {
-    //     this.estado = false;
-    // }
+    update() {
+        this.fecha = new Date();
+    }
 }
 
 class Notificacion {
@@ -98,7 +92,7 @@ notificacionesLeidasLocal.forEach(e => {
 });
 
 let userConfigAsJson = JSON.parse(localStorage.getItem("tenes-stock_configuracion-usuario"));
-configuracionUsuario = new userConfig(userConfigAsJson[0]['notificPopUp'],userConfigAsJson[0]['notificEmail'],userConfigAsJson[0]['email']);
+configuracionUsuario = new userConfig(userConfigAsJson[0]['notificPopUp'],userConfigAsJson[0]['notificEmail'],userConfigAsJson[0]['email'],userConfigAsJson[0]['listOrder']);
 
 
 /**********************     FUNCIONES GENERALES      ***********************************************************************************/
@@ -235,6 +229,8 @@ function llamarApiMeli(idMeli) {
             //console.log(typeof(_estado) + "-" + typeof(objetoActual.estado));
             //console.log(_estado + "-" + objetoActual.estado)
             console.log("cambio de estado: " + objetoActual.titulo);
+
+            objetoActual.update();
 
             //TODO: ver cómo refactorizar
             let str = _titulo;
@@ -398,12 +394,23 @@ function reconstruirDom() {
     document.getElementById("productosContenedor").innerHTML = "";
     document.getElementById("notificacionesContenedor").innerHTML = "";
 
-    //notificaciones.reverse();
-   // productos.sort((a,b) => b.fecha - a.fecha);                 //Ordenamos los productos por fecha en que se agregaron.
+    switch(configuracionUsuario.listOrder) {
+        case 0: {
+            productos.sort((a,b) => b.fecha - a.fecha);
+            break;
+        }
+        case 1: {
+            productos.sort((a, b) => a.titulo.localeCompare(b.titulo));
+            break;
+        }
+        case 2: {
+            productos.sort((a,b) => a.precio - b.precio);
+            break;
+        }
+    }
     notificaciones.sort((a,b) => b.fecha - a.fecha);
 
     productos.forEach(e => {
-        //console.log(e)
         cargarProductoADom(e);
     });
 
@@ -413,6 +420,17 @@ function reconstruirDom() {
 
     localStorage.setItem("tenes-stock_productos",JSON.stringify(productos));
     localStorage.setItem("tenes-stock_notificaciones",JSON.stringify(notificaciones));
+    localStorage.setItem("tenes-stock_configuracion-usuario","["+JSON.stringify(configuracionUsuario)+"]");
+
+    document.getElementById("notificPopUp").checked = configuracionUsuario.notificPopUp;
+    document.getElementById("notificEmail").checked = configuracionUsuario.notificEmail;
+    document.getElementById("userEmail").value = configuracionUsuario.email;
+
+    document.getElementById("userEmail").disabled = !configuracionUsuario.notificEmail;
+    let botonesSeleccionOrden = document.querySelectorAll(".botSetOrder");
+    botonesSeleccionOrden.forEach(e => {e.disabled = false;});
+    botonesSeleccionOrden[configuracionUsuario.listOrder].disabled=true;
+
 
     //TODO: analizar si realmente tiene que hacerlo para evitar agregar al stack innecesariamente: utilizar querySelector(clase) y chequear si es undefined
     setTimeout(() => {
@@ -508,7 +526,16 @@ botonGeneradorRandom.onclick = () => {
 
 let botonNotificaciones = document.getElementById("botonNotificaciones");
 botonNotificaciones.onclick = () => {
+   // let elementosActivos = document.querySelectorAll(".oculto");
+    //console.log(elementosActivos);
+    document.getElementById("configuracionUsuarioContenedor").classList.add("oculto");
     document.getElementById("notificacionesContenedor").classList.toggle("oculto");
+};
+
+let botonConfiguracion = document.getElementById("botonConfiguracion");
+botonConfiguracion.onclick = () => {
+    document.getElementById("notificacionesContenedor").classList.add("oculto");
+    document.getElementById("configuracionUsuarioContenedor").classList.toggle("oculto");
 };
 
 
@@ -601,7 +628,7 @@ if(produccion) {
 
 reconstruirDom();
 
-if(!produccion) {
+//if(produccion) {
     setInterval(() => {
         //console.log(".")
         //console.clear();
@@ -609,24 +636,19 @@ if(!produccion) {
             setTimeout(() => {llamarApiMeli(e.idMeli)},Math.floor(10+Math.random()*300))
         });
         //reconstruirDom();
-    },1*10*1000);
+    },1*30*1000);
 
-}
+//}
 
 
 //En el primer inicio llamamos a la API ni bien carga la página para que se muestre actualizado todo, y colocamos para que una vez por minuto llame a actualizar.
 
 
-// Toastify({
-//     text: "This is a toast",
-//     duration: 3000
-//     }).showToast();
-
 function showToastiFy(status, titulo) {
     console.log("Toastify: " + status + "-" + titulo);
     Toastify({
         text: titulo,
-        duration: 15000,
+        duration: 1500,
         //destination: "https://github.com/apvarun/toastify-js",
         //newWindow: true,
         close: true,
@@ -642,4 +664,34 @@ function showToastiFy(status, titulo) {
           },
         //onClick: function(){} // Callback after click
       }).showToast();
+}
+
+//////////////////////////
+let inputNotificPopUp = document.getElementById("notificPopUp");
+inputNotificPopUp.onchange = () => {
+    configuracionUsuario.notificPopUp = inputNotificPopUp.checked;
+    reconstruirDom();
+}
+
+let inputNotificEmail = document.getElementById("notificEmail");
+inputNotificEmail.onchange = () => {
+    let active = inputNotificEmail.checked;
+    configuracionUsuario.notificEmail = active;
+    reconstruirDom();
+}
+
+let inputEmail = document.getElementById("userEmail");
+inputEmail.onchange = () => {
+    configuracionUsuario.email = inputEmail.value;
+    reconstruirDom();
+}
+
+function setListOrder(seleccion) {
+    console.log("order: " + seleccion)
+    configuracionUsuario.listOrder = seleccion;
+    
+    
+    reconstruirDom();
+
+
 }
