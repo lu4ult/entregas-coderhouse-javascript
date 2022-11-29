@@ -1,5 +1,5 @@
 /**********************     VARIABLES GENERALES Y OBJETOS      ***********************************************************************************/
-let produccion = "https://friendly-bublanina-3c840e.netlify.app/" === window.location.href || "https://lu4ult.github.io/entregas-coderhouse-javascript/" === window.location.href;
+let produccion = "https://friendly-bublanina-3c840e.netlify.app/" === window.location.href || "https://dulcet-palmier-1fc819.netlify.app/" === window.location.href;
 let configuracionUsuario;
 let debugEnabled = true;
 
@@ -634,7 +634,7 @@ reconstruirDom();
 //En el primer inicio llamamos a la API ni bien carga la página para que se muestre actualizado todo.
 if(produccion) {
     productos.forEach(e => {
-        llamarApiMeli(e.idMeli);
+        setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(100+Math.random()*500))
     });
 }
 
