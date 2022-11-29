@@ -309,6 +309,7 @@ body {
                     width: 100%;
 
                     .fecha {
+                        color: $azul;                   //TODO: acomodar por el azul correspondiente
                         font-size: 1.2rem;
                     }
                     .titulo {
@@ -546,6 +547,7 @@ body {
         position: fixed;
         width: 40vw;
         min-width: 500px;
+        top: 100px;
     }
 
     .configuracionUsuarioContenedor {

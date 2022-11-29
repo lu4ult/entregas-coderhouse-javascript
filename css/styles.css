@@ -241,6 +241,7 @@ body main .productos .productos__individual .principal {
   width: 100%;
 }
 body main .productos .productos__individual .principal .fecha {
+  color: #99bee1;
   font-size: 1.2rem;
 }
 body main .productos .productos__individual .principal .titulo {
@@ -476,6 +477,7 @@ body footer a {
     position: fixed;
     width: 40vw;
     min-width: 500px;
+    top: 100px;
   }
   .configuracionUsuarioContenedor .vertical .botonesOrdenContenedor button {
     width: 100px;
