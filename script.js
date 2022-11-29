@@ -125,6 +125,7 @@ botonAgregarProductos.addEventListener("click", agregarProductos);
 
 function agregarProductos() {
     let user = urlInput.value;
+    user = user.toUpperCase();                                  //Por si escriben el ID.
     //user = "MLA-1117926574";
     urlInput.value = "";
     const inicioId = user.indexOf("MLA") +3;                    //+3 por el "MLA"
@@ -217,7 +218,7 @@ function llamarApiMeli(idMeli) {
 
             setTimeout(() => {                              //Llamamos así la función para que se ejecute última, y muestre todo bien actualizado, sino algunas variables pueden quedar mal ya que trabajamos todo asincrono.
                 reconstruirDom();
-            },100);
+            },0);
 
 
             if(configuracionUsuario.notificPopUp) {
@@ -302,8 +303,6 @@ function borrarProducto(_id) {
     papelera.push(productos[indiceProductoBuscado]);
     document.getElementById("botonPapelera").classList.remove("oculto");
     productos.splice(indiceProductoBuscado,1);
-
-   
 
     if(productos.length === 0) {
         document.getElementById("botonGeneradorRandom").classList.remove("oculto");
@@ -626,8 +625,7 @@ function simulacion() {
 
 
 /******************************************************************************************************************************/
-
-//console.clear();
+console.clear();
 console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
 console.log("Produccion: " + produccion);
 
