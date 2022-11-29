@@ -71,9 +71,9 @@ body {
         background: $amarillo;
         border-bottom: 1px solid $gris;
 
-        height: 100px;
+        height: 120px;
 
-        @include centrarConFlex(0);
+        @include centrarConFlex(1);
         justify-content: space-between;
 
         .logo {
@@ -177,7 +177,20 @@ body {
             }
 
             #botonConfiguracion {
+                &:hover {
+                    &::after {
+                        position: absolute;
+                        top: 80px;
+                        right: 5px;
+                        content: "Configuración";
+                    }
+                }
+            }
 
+            ::after {
+                background-color: $gris;
+                color: $fondo;
+                padding: 0.5rem;
             }
         }
     }
@@ -186,22 +199,6 @@ body {
         grid-area: main;
         padding: 100px 0;
         @include centrarConFlex(1);
-
-        i {
-            font-size: 3rem;
-        }
-
-        // button {
-        //     font-size: 2rem;
-        //     margin: 1rem;
-        //     padding: 1rem;
-        //     color: white;
-        //     background-color: green;
-        //     // width: 300px;
-        //     &:hover {
-        //         background-color: blue;
-        //     }
-        // }
 
         .agregarProductos, .presupuesto, .simulacion {
             width: 80%;
@@ -387,16 +384,18 @@ body {
 
 .notificacionesContenedor, .configuracionUsuarioContenedor {
     position: fixed;
-    width: 40vw;
+    width: 90vw;
+    //min-width: 500px;
     height: auto;
     min-height: 400px;
     max-height: 80vh;
-    overflow: auto;
+    overflow-y: auto;
+    //overflow-x: hidden;
     z-index: 100;
 
 
     background-color: $azul;
-    top: 100px;
+    top: 120px;
     right: 10px;
     border: 3px solid $gris;
     display: flex;
@@ -441,45 +440,62 @@ body {
 
 .configuracionUsuarioContenedor {
     @include centrarConFlex(1);
-    justify-content: start;
-    span {
-        padding-top: 3rem;
+    justify-content: space-evenly;
+
+    .horizontal {
+        margin: 1rem;
+        padding: 0.5rem;
+        width: 90%;
+        @include centrarConFlex(0);
+        justify-content: space-evenly;
+        //background-color: pink;
+        border-bottom: 1px solid $gris;
+        span {
+            //background-color: greenyellow;
+            width: 80%;
+        }
     }
 
-
     input[type=checkbox] {
-        border: 5px solid violet;
         height: 20px;
         aspect-ratio: 1;
     }
 
     input[type=email] {
-        width: 70%;
+        width: 100%;
         text-align: center;
+        font-size: 1rem;
     }
 
-    .botonesOrdenContenedor {
-        width: 100%;
-        @include centrarConFlex(0);
-        justify-content: space-around;
+    .vertical {
+        @include centrarConFlex(1);
+        width: 90%;
+        padding: 0.5rem;
+        margin: 0.5rem;
+        .botonesOrdenContenedor {
+            width: 100%;
+            @include centrarConFlex(0);
 
-        button {
-            cursor: pointer;
-            background-color: inherit;
-            width: 100px;
-            aspect-ratio: 3/1;
-            box-shadow: 5px 5px black;
-            &:active {
-                transform: translate(5px,5px);
-            }
+            justify-content: space-evenly;
+            button {
+                cursor: pointer;
+                background-color: inherit;
+                width: 20vw;
+                aspect-ratio: 3;
+                box-shadow: 5px 5px black;
+                border-radius: 5px;
+                &:active {
+                    transform: translate(5px,5px);
+                    box-shadow: none;
+                }
 
-            &:disabled {
-                cursor: initial;
-                box-shadow: none;
-                transform: translate(5px,5px);
+                &:disabled {
+                    cursor: initial;
+                    box-shadow: none;
+                    transform: translate(5px,5px);
+                }
             }
         }
-
     }
 }
 
@@ -507,19 +523,14 @@ body {
 @media only screen and (min-width: 767px) {
     body {
         header {
+            height: 100px;
+
+            @include centrarConFlex(0);
+            justify-content: space-between;
             .logo {
                 img {
                     width: 90px;
                     aspect-ratio: 1;
-                }
-            }
-            nav {
-                // height: 100%;
-                ul {
-                    list-style-type: none;
-                    i {
-                        font-size: 2.5rem;
-                    }
                 }
             }
         }
@@ -530,4 +541,22 @@ body {
 
         }
     }
+
+    .notificacionesContenedor, .configuracionUsuarioContenedor {
+        position: fixed;
+        width: 40vw;
+        min-width: 500px;
+    }
+
+    .configuracionUsuarioContenedor {
+        .vertical {
+            .botonesOrdenContenedor {
+                button {
+                    width: 100px;
+                    //aspect-ratio: 3;
+                }
+            }
+        }
+    }
+
 }

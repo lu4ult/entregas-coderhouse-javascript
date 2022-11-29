@@ -51,16 +51,24 @@
 
       <div class="notificacionesContenedor oculto" id="notificacionesContenedor"><strong>Sin Notificaciones!</strong></div>
       <div class="configuracionUsuarioContenedor oculto" id="configuracionUsuarioContenedor">
-        <span>Notificaciones Emergentes</span>
-        <input type="checkbox" id="notificPopUp">
-        <span>Notificaciones por Email</span>
-        <input type="checkbox" id="notificEmail">
-        <input type="email" value="email@gmail.com" id="userEmail">
-        <span>Orden de productos</span>
-        <div class="botonesOrdenContenedor">
-          <button class="botSetOrder" onclick="setListOrder(0)" id="botonOrder0">Fecha</button>
-          <button class="botSetOrder" onclick="setListOrder(1)" id="botonOrder1">Título</button>
-          <button class="botSetOrder" onclick="setListOrder(2)" id="botonOrder2">Precio</button>
+        <div class="horizontal">
+          <input type="checkbox" id="notificPopUp">
+          <span>Notificaciones Emergentes</span>
+        </div>
+        <div class="horizontal">
+          <input type="checkbox" id="notificEmail">
+          <span>Notificaciones por Email</span>
+        </div>
+        <div class="horizontal">
+          <input type="email" value="email@gmail.com" id="userEmail">
+        </div>
+        <div class="vertical">
+          <span>Orden de productos</span>
+          <div class="botonesOrdenContenedor">
+            <button class="botSetOrder" onclick="setListOrder(0)" id="botonOrder0">Fecha</button>
+            <button class="botSetOrder" onclick="setListOrder(1)" id="botonOrder1">Título</button>
+            <button class="botSetOrder" onclick="setListOrder(2)" id="botonOrder2">Precio</button>
+          </div>
         </div>
       </div>
       <div class="simulacion">

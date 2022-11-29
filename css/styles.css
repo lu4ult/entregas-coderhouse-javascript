@@ -1,3 +1,4 @@
+@charset "UTF-8";
 * {
   margin: 0;
   padding: 0;
@@ -31,9 +32,9 @@ body header {
   grid-area: header;
   background: #fff159;
   border-bottom: 1px solid #666666;
-  height: 100px;
+  height: 120px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   justify-content: space-between;
@@ -109,6 +110,17 @@ body header .navegacion #botonGeneradorRandom:hover::after {
   right: 5px;
   content: "Cargar Productos Aleatorios";
 }
+body header .navegacion #botonConfiguracion:hover::after {
+  position: absolute;
+  top: 80px;
+  right: 5px;
+  content: "Configuración";
+}
+body header .navegacion ::after {
+  background-color: #666666;
+  color: #ebebeb;
+  padding: 0.5rem;
+}
 body main {
   grid-area: main;
   padding: 100px 0;
@@ -116,9 +128,6 @@ body main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-body main i {
-  font-size: 3rem;
 }
 body main .agregarProductos, body main .presupuesto, body main .simulacion {
   width: 80%;
@@ -304,14 +313,14 @@ body footer a {
 
 .notificacionesContenedor, .configuracionUsuarioContenedor {
   position: fixed;
-  width: 40vw;
+  width: 90vw;
   height: auto;
   min-height: 400px;
   max-height: 80vh;
-  overflow: auto;
+  overflow-y: auto;
   z-index: 100;
   background-color: #99bee1;
-  top: 100px;
+  top: 120px;
   right: 10px;
   border: 3px solid #666666;
   display: flex;
@@ -350,39 +359,61 @@ body footer a {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  justify-content: start;
+  justify-content: space-evenly;
 }
-.configuracionUsuarioContenedor span {
-  padding-top: 3rem;
+.configuracionUsuarioContenedor .horizontal {
+  margin: 1rem;
+  padding: 0.5rem;
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  justify-content: space-evenly;
+  border-bottom: 1px solid #666666;
+}
+.configuracionUsuarioContenedor .horizontal span {
+  width: 80%;
 }
 .configuracionUsuarioContenedor input[type=checkbox] {
-  border: 5px solid violet;
   height: 20px;
   aspect-ratio: 1;
 }
 .configuracionUsuarioContenedor input[type=email] {
-  width: 70%;
+  width: 100%;
   text-align: center;
+  font-size: 1rem;
 }
-.configuracionUsuarioContenedor .botonesOrdenContenedor {
+.configuracionUsuarioContenedor .vertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  padding: 0.5rem;
+  margin: 0.5rem;
+}
+.configuracionUsuarioContenedor .vertical .botonesOrdenContenedor {
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-evenly;
 }
-.configuracionUsuarioContenedor .botonesOrdenContenedor button {
+.configuracionUsuarioContenedor .vertical .botonesOrdenContenedor button {
   cursor: pointer;
   background-color: inherit;
-  width: 100px;
-  aspect-ratio: 3/1;
+  width: 20vw;
+  aspect-ratio: 3;
   box-shadow: 5px 5px black;
+  border-radius: 5px;
 }
-.configuracionUsuarioContenedor .botonesOrdenContenedor button:active {
+.configuracionUsuarioContenedor .vertical .botonesOrdenContenedor button:active {
   transform: translate(5px, 5px);
+  box-shadow: none;
 }
-.configuracionUsuarioContenedor .botonesOrdenContenedor button:disabled {
+.configuracionUsuarioContenedor .vertical .botonesOrdenContenedor button:disabled {
   cursor: initial;
   box-shadow: none;
   transform: translate(5px, 5px);
@@ -429,14 +460,24 @@ body footer a {
   }
 }
 @media only screen and (min-width: 767px) {
+  body header {
+    height: 100px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+  }
   body header .logo img {
     width: 90px;
     aspect-ratio: 1;
   }
-  body header nav ul {
-    list-style-type: none;
+  .notificacionesContenedor, .configuracionUsuarioContenedor {
+    position: fixed;
+    width: 40vw;
+    min-width: 500px;
   }
-  body header nav ul i {
-    font-size: 2.5rem;
+  .configuracionUsuarioContenedor .vertical .botonesOrdenContenedor button {
+    width: 100px;
   }
 }/*# sourceMappingURL=styles.css.map */

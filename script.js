@@ -264,7 +264,6 @@ function llamarApiMeli(idMeli) {
             else {
                 console.log("email no habilitado");
             }
-            
             //objetoActual.estado = _estado;
         }
         objetoActual.estado = _estado;
@@ -278,6 +277,8 @@ function llamarApiMeli(idMeli) {
         //console.log(titulo + "-" + precio  + "-" + estado);
 
     })
+    .catch(error => {console.log("Error: " + error)})
+
 }
 
 /*
