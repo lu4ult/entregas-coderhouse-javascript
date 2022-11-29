@@ -217,7 +217,7 @@ function llamarApiMeli(idMeli) {
 
             setTimeout(() => {                              //Llamamos así la función para que se ejecute última, y muestre todo bien actualizado, sino algunas variables pueden quedar mal ya que trabajamos todo asincrono.
                 reconstruirDom();
-            },0);
+            },100);
 
 
             if(configuracionUsuario.notificPopUp) {
@@ -263,7 +263,23 @@ function llamarApiMeli(idMeli) {
         }
         objetoActual.estado = _estado;
     })
-    .catch(error => {console.log("Error: " + error)})
+    .catch(error => {
+        console.log("Error: " + error);
+        //alert("Algo salió mal con el producto "+idMeli+", por favor eliminelo manualmente.");
+        Swal.fire({
+            title: 'Error!',
+            text: "Algo salió mal con el producto "+idMeli+", seleccione si desea eliminar el producto o cancelar.",
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, eliminar'
+          }).then((result) => {
+            if (result.isConfirmed) {
+                borrarProducto(idMeli);
+            }
+          });
+    })
 }
 
 //Esto lo hice así manualmente porque el "findIndex" no hubo forma de hacerlo funcionar.

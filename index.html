@@ -50,12 +50,29 @@
 
     </header>
     <main>
-      <!-- <details>
-        <article>Hola</article>
-      </details> -->
-      <article>El objetivo de esta página será que me "notifique" cuando las publicaciones en mercadolibre de los productos cargados cambian su estado de pausado a activo</article>
-      <article> o visceversa; ya sea por falta de stock, baneo del bot, incumplimiento de las normas, entre otras razones. </article>
+      <details>
+        <summary>Sobre Tenes stock.</summary>
+        <article>El objetivo de esta página es que "notifique" cuando las publicaciones en mercadolibre de los productos cargados cambian su estado de pausado a activo o visceversa.</article>
+        <article>La idea es poder monitorear las publicaciones, ya sean propias para ver rápidame y visualmente si una publicación se quedó sin stock, entró en revisión, fue baneada, entre otras razones que podrían hacer que la publicación no este "activa".</article>
+        <article>También, permite monitorear algún producto que nos interese pero que el vendedor se quedó sin stock, de forma que me entere cuando vuelva a tener stock y poder comprarlo, y no tener que estar manualmente chequeando las publicaciones frecuentemente.</article>
+      </details>
 
+      <details>
+        <summary>Cómo utilizar la página</summary>
+        <ul>
+          <li>Copiar la URL de algún producto de mercadolibre, y pegarla en el campo correspondiente para agregar el producto.</li>
+          <li>Si se ingresa un producto "repetido" nos aparecerá un mensaje de error.</li>
+          <li>Utilizar el botón "Simulación" para alterar el estado de los productos y poder ver el funcionamiento de la página.</li>
+          <li>Dentro de configuraciones, activar las notificaciones por email y colocar un email real para poder ver su funcionamiento.</li>
+          <li>Para borrar una publicación utilizar el botón de cierre, aparecerá un ícono de papelera para poder restaurarlo.</li>
+          <li>Cada vez que se elimine una publicación aparecerá la notificación correspondiente.</li>
+          <li>Las notificaciones también se pueden eliminar individualmente.</li>
+          <li>Si se borran todas las publicaciones aparecerá un ícono "aleatorio" para poder cargar algunos productos random automáticamente.</li>
+          <li>El campo "presupuesto" permite filtrar (pero no se borran) las publicaciones según un presupuesto dado; probarlo con valores bajos como 10$, 10.000$ y 5.000.000$ para verificar los posibles resultados.</li>
+        </ul>
+
+      </details>
+      
 
       <div class="notificacionesContenedor oculto" id="notificacionesContenedor"><strong>Sin Notificaciones!</strong></div>
       <div class="configuracionUsuarioContenedor oculto" id="configuracionUsuarioContenedor">
