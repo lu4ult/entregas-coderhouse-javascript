@@ -3,57 +3,111 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tercera Pre-Entrega</title>
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous"> -->
-
+    <title>Tenes stock?</title>
+    <link rel="icon" href="../images/warehouse.png">
     <!-- Google Fonts -->
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
     </style>
-
     <!-- Toastify -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
     <link href="css/styles.css" rel="stylesheet">
+
+    <script type="text/javascript">
+      (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "eqnyzughoc");
+  </script>
+
   </head>
   <body>
     <header>
       <div class="logo">
         <img src="./images/warehouse.png">
-      </div>
-      <div class="titulo">
         <h1>¿Tenés Stock?</h1>
-
       </div>
+
       <div class="navegacion">
         <button id="botonGeneradorRandom" class="oculto">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M403.8 34.4c12-5 25.7-2.2 34.9 6.9l64 64c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-64 64c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6V160H352c-10.1 0-19.6 4.7-25.6 12.8L284 229.3 244 176l31.2-41.6C293.3 110.2 321.8 96 352 96h32V64c0-12.9 7.8-24.6 19.8-29.6zM164 282.7L204 336l-31.2 41.6C154.7 401.8 126.2 416 96 416H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H96c10.1 0 19.6-4.7 25.6-12.8L164 282.7zm274.6 188c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6V416H352c-30.2 0-58.7-14.2-76.8-38.4L121.6 172.8c-6-8.1-15.5-12.8-25.6-12.8H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H96c30.2 0 58.7 14.2 76.8 38.4L326.4 339.2c6 8.1 15.5 12.8 25.6 12.8h32V320c0-12.9 7.8-24.6 19.8-29.6s25.7-2.2 34.9 6.9l64 64c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-64 64z"/></svg>
         </button>
-        <button id="botonNotificaciones">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z"/></svg>
+        <button id="botonPapelera" class="oculto">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3C140.6 6.8 151.7 0 163.8 0zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm192 64c-6.4 0-12.5 2.5-17 7l-80 80c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V408c0 13.3 10.7 24 24 24s24-10.7 24-24V273.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-4.5-4.5-10.6-7-17-7z"/></svg>
         </button>
         <button id="botonDescargarCsv">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zM432 456c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg>
         </button>
-        <button id="botonPapelera" class="oculto">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3C140.6 6.8 151.7 0 163.8 0zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm192 64c-6.4 0-12.5 2.5-17 7l-80 80c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V408c0 13.3 10.7 24 24 24s24-10.7 24-24V273.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-4.5-4.5-10.6-7-17-7z"/></svg>
+        <button id="botonNotificaciones">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z"/></svg>
+        </button>
+        <button id="botonConfiguracion">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0S96 57.3 96 128s57.3 128 128 128zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>
         </button>
       </div>
 
     </header>
     <main>
-      <h2>Tercera Pre Entrega!</h2>
-      <article>El objetivo de esta página será que me "notifique" cuando las publicaciones en mercadolibre de los productos cargados cambian su estado de pausado a activo</article>
-      <article> o visceversa; ya sea por falta de stock, baneo del bot, incumplimiento de las normas, entre otras razones. </article>
-      <article>De momento y hasta que veamos en clase el consumo de la API los datos como el título, precio y otros están incompletos o son aleatorios, pero el resto de las</article>
-      <article>funciones de la página (como agregar un producto según la URL funcionan).</article>
+      <details>
+        <summary>Sobre Tenes stock.</summary>
+        <article>El objetivo de esta página es que "notifique" cuando las publicaciones en mercadolibre de los productos cargados cambian su estado de pausado a activo o visceversa.</article>
+        <article>La idea es poder monitorear las publicaciones, ya sean propias para ver rápidame y visualmente si una publicación se quedó sin stock, entró en revisión, fue baneada, entre otras razones que podrían hacer que la publicación no este "activa".</article>
+        <article>También, permite monitorear algún producto que nos interese pero que el vendedor se quedó sin stock, de forma que me entere cuando vuelva a tener stock y poder comprarlo, y no tener que estar manualmente chequeando las publicaciones frecuentemente.</article>
+      </details>
+
+      <details>
+        <summary>Cómo utilizar la página</summary>
+        <ul>
+          <li>Copiar la URL de algún producto de mercadolibre, y pegarla en el campo correspondiente para agregar el producto.</li>
+          <li>Si se ingresa un producto "repetido" nos aparecerá un mensaje de error.</li>
+          <li>Utilizar el botón "Simulación" para alterar el estado de los productos y poder ver el funcionamiento de la página.</li>
+          <li>Dentro de configuraciones, activar las notificaciones por email y colocar un email real para poder ver su funcionamiento.</li>
+          <li>Para borrar una publicación utilizar el botón de cierre, aparecerá un ícono de papelera para poder restaurarlo.</li>
+          <li>Cada vez que se elimine una publicación aparecerá la notificación correspondiente.</li>
+          <li>Las notificaciones también se pueden eliminar individualmente.</li>
+          <li>Si se borran todas las publicaciones aparecerá un ícono "aleatorio" para poder cargar algunos productos random automáticamente.</li>
+          <li>El campo "presupuesto" permite filtrar (pero no se borran) las publicaciones según un presupuesto dado; probarlo con valores bajos como 10$, 10.000$ y 5.000.000$ para verificar los posibles resultados.</li>
+        </ul>
+
+      </details>
+      
+
+      <div class="notificacionesContenedor oculto" id="notificacionesContenedor"><strong>Sin Notificaciones!</strong></div>
+      <div class="configuracionUsuarioContenedor oculto" id="configuracionUsuarioContenedor">
+        <div class="horizontal">
+          <input type="checkbox" id="notificPopUp">
+          <span>Notificaciones Emergentes</span>
+        </div>
+        <div class="horizontal">
+          <input type="checkbox" id="notificAudio">
+          <span>Notificaciones Habladas</span>
+        </div>
+        <div class="horizontal">
+          <input type="checkbox" id="notificEmail">
+          <span>Notificaciones por Email</span>
+        </div>
+        <div class="horizontal">
+          <input type="email" value="email@gmail.com" id="userEmail">
+        </div>
+        <div class="vertical">
+          <span>Orden de productos</span>
+          <div class="botonesOrdenContenedor">
+            <button class="botSetOrder" onclick="setListOrder(0)" id="botonOrder0">Fecha</button>
+            <button class="botSetOrder" onclick="setListOrder(1)" id="botonOrder1">Título</button>
+            <button class="botSetOrder" onclick="setListOrder(2)" id="botonOrder2">Precio</button>
+          </div>
+        </div>
+      </div>
+      <div class="simulacion">
+        <button onclick="simulacion();">Simulacion</button>
+      </div>
 
       <div class="agregarProductos">
         <input type="text" id="urlInput" value="Copia aquí la URL del producto de MercadoLibre!">
         <button id="botonAgregarProductos">Agregar productos!</button>
       </div>
-
-      <div class="notificacionesContenedor oculto" id="notificacionesContenedor"><strong>Sin Notificaciones!</strong></div>
 
       <div class="presupuesto">
         <input type="text" id="presupuestoInput" value="Ingresar aquí el valor de presupuesto.">
@@ -77,6 +131,8 @@
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">(function(){emailjs.init("840utIXux0aomLktd");})();</script>
     <script src="script.js"></script>
   </body>
 </html>
