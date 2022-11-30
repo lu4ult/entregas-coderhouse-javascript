@@ -181,6 +181,8 @@ function agregarProductos() {
     }
 }
 
+
+//TODO: analizar status code del HTTP con un producto inválido, lo que ahora resolvimos con el swal
 function llamarApiMeli(idMeli) {
     let idMeliApi = idMeli.replace("-","");
     if(debugEnabled) console.log("Llamando API Meli: " + idMeliApi);
@@ -497,6 +499,33 @@ function presupuesto() {
     }
 }
 
+function importarPorVendedor(nickName) {
+    let arrayDeProductosDelVendedor = [];
+
+
+    fetch('https://api.mercadolibre.com/sites/MLA/search?nickname='+nickName)
+    .then(response => response.json())
+    .then(data => {
+        let _productos = data['results'];
+        //acá hacer validación
+        console.log("results largo: " + _productos.length);
+        if(_productos.length) {
+
+            for(let i = 0;i<10 && i<_productos.length; i++) {
+                let _id = _productos[i].id.replace("MLA","MLA-");
+                let yaCargado = productos.findIndex(e => e.idMeli === _id);
+                if(yaCargado === -1) {                                                                                      //Verificamos que el producto no se encuentre cargado actualmente.
+                    productos.push(new Producto(_id,"Espere...",0,false,new Date(),""));
+                }
+            }
+        }
+        else {
+            console.log("error array 0")
+        }
+    });
+    reconstruirDom();
+}
+
 
 
 /**********************     NAVEGACIÓN      ***********************************************************************************/
@@ -551,6 +580,16 @@ botonPapelera.onclick = () => {
         botonPapelera.classList.add("oculto");
     }
 };
+
+let botonImportarPorVendedor = document.getElementById("botonImportarPorVendedor");
+botonImportarPorVendedor.onclick = () => {
+    console.log("iniciando importar")
+    let nickName = prompt("usuario?");
+    importarPorVendedor(nickName.toUpperCase());
+    //importarPorVendedor('LU4ULT_LAUTARO');
+    console.log("Fin importar");
+
+}
 
 /**********************     MENÚ CONFIGURACIÓN DEL USUARIO ********************************************************************/
 

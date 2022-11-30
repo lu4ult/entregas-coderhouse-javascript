@@ -246,7 +246,9 @@ body main .productos .productos__individual .principal .fecha {
 }
 body main .productos .productos__individual .principal .titulo {
   width: 90%;
+  max-height: 90px;
   font-size: 1.5rem;
+  overflow: hidden;
   text-align: center;
 }
 body main .productos .productos__individual .principal .img-container {
