@@ -1,7 +1,8 @@
 /**********************     VARIABLES GENERALES Y OBJETOS      ***********************************************************************************/
 let produccion = "https://friendly-bublanina-3c840e.netlify.app/" === window.location.href || "https://dulcet-palmier-1fc819.netlify.app/" === window.location.href;
 let configuracionUsuario;
-let debugEnabled = true;
+let debugEnabled = false;
+let notificacionesPausadasMomentaneamente=false;
 
 let editSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.8 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"/></svg>'
 let deleteSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M175 175C184.4 165.7 199.6 165.7 208.1 175L255.1 222.1L303 175C312.4 165.7 327.6 165.7 336.1 175C346.3 184.4 346.3 199.6 336.1 208.1L289.9 255.1L336.1 303C346.3 312.4 346.3 327.6 336.1 336.1C327.6 346.3 312.4 346.3 303 336.1L255.1 289.9L208.1 336.1C199.6 346.3 184.4 346.3 175 336.1C165.7 327.6 165.7 312.4 175 303L222.1 255.1L175 208.1C165.7 199.6 165.7 184.4 175 175V175zM512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48z"/></svg>'
@@ -181,9 +182,17 @@ function agregarProductos() {
     }
 }
 
+
+//TODO: analizar status code del HTTP con un producto inválido, lo que ahora resolvimos con el swal
 function llamarApiMeli(idMeli) {
     let idMeliApi = idMeli.replace("-","");
     if(debugEnabled) console.log("Llamando API Meli: " + idMeliApi);
+
+    if(notificacionesPausadasMomentaneamente) {
+        console.log("descativar en breves");
+        setTimeout(() => {notificacionesPausadasMomentaneamente = false;},5000)
+    }
+
     fetch('https://api.mercadolibre.com/items/'+idMeliApi)
     .then(response => response.json())
     .then(data => {
@@ -221,9 +230,8 @@ function llamarApiMeli(idMeli) {
             },0);
 
 
-            if(configuracionUsuario.notificPopUp) {
+            if(configuracionUsuario.notificPopUp && !notificacionesPausadasMomentaneamente) {
                 setTimeout(() => {
-                    //showToastiFy(_estado, str);
                     Toastify({
                         text: str,
                         duration: 3000,
@@ -245,13 +253,16 @@ function llamarApiMeli(idMeli) {
                 },Math.floor(Math.random()*3000));
             }
 
-            if(configuracionUsuario.notificAudio) {
-                let utterance = new SpeechSynthesisUtterance(str);
+            if(configuracionUsuario.notificAudio && !notificacionesPausadasMomentaneamente) {
+                let mensajeEnAudio = str.replace("-"," ");
+                mensajeEnAudio = mensajeEnAudio.replace("/"," ");
+
+                let utterance = new SpeechSynthesisUtterance(mensajeEnAudio);
                 utterance.pitch = 1.5;
                 window.speechSynthesis.speak(utterance);
             }
 
-            if(configuracionUsuario.notificEmail) {
+            if(configuracionUsuario.notificEmail && !notificacionesPausadasMomentaneamente) {
                 console.log("enviando email");
                 emailjs.send('service_k3tj0b9', 'template_gqsipms', {destinatario:configuracionUsuario.email,producto:_titulo,estado:_estado?"activo":"pausado"})
                 .then(function(response) {
@@ -310,8 +321,8 @@ function borrarProducto(_id) {
 
     reconstruirDom();
 
-    console.log("Papelera: ")
-    console.log(papelera);
+    //console.log("Papelera: ")
+    //console.log(papelera);
 }
 
 //TODO: chequear que todos los setTimeout sean realmente necesarios
@@ -321,9 +332,10 @@ function borrarNotificacion(indice) {
     document.getElementById("notificacionesContenedor").innerHTML = "";
     notificaciones.forEach(e => {cargarNotificacionADom(e);});
 
-    if(notificaciones.length === 0) {
-        document.getElementById("notificacionesContenedor").innerHTML ="<strong>Sin Notificaciones</strong>"
-    }
+    // if(notificaciones.length === 0) {
+    //     document.getElementById("notificacionesContenedor").innerHTML ="<strong>Sin Notificaciones</strong>"
+    // }
+    reconstruirDom();
 }
 
 function cargarNotificacionADom(objRecibido) {
@@ -364,9 +376,9 @@ function cargarProductoADom(objRecibido) {
 }
 
 
-
 function reconstruirDom() {
     if(debugEnabled) console.log("Reconstruyendo DOM");
+    console.log("Reconstruyendo DOM");
 
     document.getElementById("productosContenedor").innerHTML = "";
     document.getElementById("notificacionesContenedor").innerHTML = "";
@@ -385,15 +397,21 @@ function reconstruirDom() {
             break;
         }
     }
-    notificaciones.sort((a,b) => b.fecha - a.fecha);
 
     productos.forEach(e => {
         cargarProductoADom(e);
     });
 
-    notificaciones.forEach(e => {
-        cargarNotificacionADom(e);
-    });
+
+    notificaciones.sort((a,b) => b.fecha - a.fecha);
+    if(notificaciones.length === 0) {
+        document.getElementById("notificacionesContenedor").innerHTML ="<strong>Sin Notificaciones</strong>"
+    }
+    else {
+        notificaciones.forEach(e => {
+            cargarNotificacionADom(e);
+        });
+    }
 
     localStorage.setItem("tenes-stock_productos",JSON.stringify(productos));
     localStorage.setItem("tenes-stock_notificaciones",JSON.stringify(notificaciones));
@@ -410,13 +428,14 @@ function reconstruirDom() {
     botonesSeleccionOrden[configuracionUsuario.listOrder].disabled=true;
 
 
-    //TODO: analizar si realmente tiene que hacerlo para evitar agregar al stack innecesariamente: utilizar querySelector(clase) y chequear si es undefined
-
-    //let 
-    setTimeout(() => {
-        botonNotificaciones.classList.remove("recentlyUpdated");
-        botonNotificaciones.classList.add("recentlyUpdatedRemoved");
-    }, 500);
+    //Agregamos al stack las tareas de quitar y agregar las clases de las notificaciones sólo si corresponde.
+    let notificacionEjecutada = document.querySelectorAll(".recentlyUpdated");
+    if(notificacionEjecutada.length) {
+        setTimeout(() => {
+            botonNotificaciones.classList.remove("recentlyUpdated");
+            botonNotificaciones.classList.add("recentlyUpdatedRemoved");
+        }, 1000);
+    }
 }
 
 
@@ -479,7 +498,6 @@ function presupuesto() {
             document.getElementById("productosContenedor").innerHTML = "";          //Eliminamos los productos para mostrar sólo los que alcanza el presupuesto.
             let indice = 0;
             let costoParcialCarrito = 0;
-            let mensajeParaUsuario = "";
 
             do {                                                                                    //Hacemos un do-while en lugar de while ya que alcana para almenos el primer producto (escenario 1).
                 costoParcialCarrito += productos[indice].precio;
@@ -495,6 +513,37 @@ function presupuesto() {
             inputPresupuesto.value = "Su presupuesto alcanza sólo para los siguientes productos y sobran " + (presupuestoUsuario - costoParcialCarrito) + "$";
         }
     }
+}
+
+function importarPorVendedor(nickName) {
+    notificacionesPausadasMomentaneamente = true;
+
+    fetch('https://api.mercadolibre.com/sites/MLA/search?nickname='+nickName)
+    .then(response => response.json())
+    .then(data => {
+        let sellerProds = data['results'];
+        if(sellerProds.length) {
+            for(let i = 0;i<10 && i<sellerProds.length;i++) {
+                let _id = sellerProds[i].id.replace("MLA","MLA-");
+                let yaCargado = productos.findIndex(e => e.idMeli === _id);
+                if(yaCargado === -1) {                                                                                      //Verificamos que el producto no se encuentre cargado actualmente.
+                    productos.push(new Producto(_id,"Espere...",0,false,new Date(),""));
+                    //i--;
+                }
+            }
+        }
+        else {
+            //setTimeout(() => {                                                          //Si no lo ejecutamos así (cargandolo al stack con tiempo 0), por alguna razón el Swal entra siempre en el .then y el modal desaparece instantáneamente.
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Ups!',
+                    text: 'Algo salió mal... quizás el Nick esté mal?',
+                  })
+              //},0);
+            //console.log("error array 0")
+        }
+    });
+    reconstruirDom();
 }
 
 
@@ -552,6 +601,48 @@ botonPapelera.onclick = () => {
     }
 };
 
+let botonImportarPorVendedor = document.getElementById("botonImportarPorVendedor");
+botonImportarPorVendedor.onclick = () => {
+    console.log("iniciando importar")
+
+    Swal.fire({
+        title: 'Ingrese nick para importar',
+        text: 'Nick del vendedor (EJ. LU4ULT_LAUTARO ). Se importarán 10 publicaciones de ese vendedor.',
+        input: 'text',
+        showCancelButton: true,
+        confirmButtonText: 'Importar',
+        //showLoaderOnConfirm: true,
+        // preConfirm: (login) => {
+        //   return fetch(`//api.github.com/users/${login}`)
+        //     .then(response => {
+        //       if (!response.ok) {
+        //         throw new Error(response.statusText)
+        //       }
+        //       return response.json()
+        //     })
+        //     .catch(error => {
+        //       Swal.showValidationMessage(
+        //         `Request failed: ${error}`
+        //       )
+        //     })
+        // },
+        //allowOutsideClick: () => !Swal.isLoading()
+      }).then((result) => {
+        if (result.isConfirmed) {
+        //   Swal.fire({
+        //     title: `${result.value.login}'s avatar`,
+        //     imageUrl: result.value.avatar_url
+        //   })
+        //alert(result.value)
+        importarPorVendedor(result.value.toUpperCase());
+        }
+      })
+    //let nickName = prompt("usuario?");
+    //importarPorVendedor(nickName.toUpperCase());
+    //importarPorVendedor('LU4ULT_LAUTARO');
+    console.log("Fin importar");
+}
+
 /**********************     MENÚ CONFIGURACIÓN DEL USUARIO ********************************************************************/
 
 let inputNotificPopUp = document.getElementById("notificPopUp");
@@ -580,7 +671,6 @@ inputEmail.onchange = () => {
 }
 
 function setListOrder(seleccion) {
-    console.log("order: " + seleccion)
     configuracionUsuario.listOrder = seleccion;
     reconstruirDom();
 }
@@ -643,11 +733,11 @@ let contadorLlamadasApi = 0;
 let intervaloLlamadaAPi = setInterval(() => {
     contadorLlamadasApi++;
 
-    if(contadorLlamadasApi >= 5) {
+    if(contadorLlamadasApi >= 18) {
         clearInterval(intervaloLlamadaAPi);
     }
     productos.forEach(e => {
-        setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(100+Math.random()*500))
+        setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(Math.random()*300))
     });
 },10*1000);
 

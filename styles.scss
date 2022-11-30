@@ -96,7 +96,7 @@ body {
             //width: 40%;
             button {
                 cursor: pointer;
-                width: 50px;
+                width: 35px;
                 aspect-ratio: 1;
                 background-color: inherit;
                 outline: none;
@@ -124,7 +124,7 @@ body {
                         position: absolute;
                         top: 80px;
                         right: 5px;
-                        content: "Descargar CSV";
+                        content: "Descargar en CSV";
                     }
                 }
             }
@@ -146,7 +146,7 @@ body {
                         position: absolute;
                         top: 80px;
                         right: 5px;
-                        content: "Ver Notificaciones";
+                        content: "Notificaciones";
                     }
                 }
 
@@ -183,6 +183,17 @@ body {
                         top: 80px;
                         right: 5px;
                         content: "Configuración";
+                    }
+                }
+            }
+
+            #botonImportarPorVendedor {
+                &:hover {
+                    &::after {
+                        position: absolute;
+                        top: 80px;
+                        right: 5px;
+                        content: "Importar de Vendedor";
                     }
                 }
             }
@@ -314,7 +325,9 @@ body {
                     }
                     .titulo {
                         width: 90%;
+                        max-height: 90px;
                         font-size: 1.5rem;
+                        overflow: hidden;
                         text-align: center;
                     }
 
@@ -531,6 +544,12 @@ body {
             .logo {
                 img {
                     width: 90px;
+                    aspect-ratio: 1;
+                }
+            }
+            .navegacion {
+                button {
+                    width: 45px;
                     aspect-ratio: 1;
                 }
             }
