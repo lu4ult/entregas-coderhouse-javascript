@@ -189,7 +189,6 @@ function llamarApiMeli(idMeli) {
     if(debugEnabled) console.log("Llamando API Meli: " + idMeliApi);
 
     if(notificacionesPausadasMomentaneamente) {
-        console.log("descativar en breves");
         setTimeout(() => {notificacionesPausadasMomentaneamente = false;},5000)
     }
 
@@ -250,7 +249,7 @@ function llamarApiMeli(idMeli) {
                           },
                         //onClick: function(){} // Callback after click
                       }).showToast();
-                },Math.floor(Math.random()*3000));
+                },Math.floor(Math.random()*300));
             }
 
             if(configuracionUsuario.notificAudio && !notificacionesPausadasMomentaneamente) {
@@ -378,7 +377,6 @@ function cargarProductoADom(objRecibido) {
 
 function reconstruirDom() {
     if(debugEnabled) console.log("Reconstruyendo DOM");
-    console.log("Reconstruyendo DOM");
 
     document.getElementById("productosContenedor").innerHTML = "";
     document.getElementById("notificacionesContenedor").innerHTML = "";
@@ -408,6 +406,9 @@ function reconstruirDom() {
         document.getElementById("notificacionesContenedor").innerHTML ="<strong>Sin Notificaciones</strong>"
     }
     else {
+        while(notificaciones.length >20) {                                  //Limitamos la cantidad de notificaciones ya que si son muchas se ralentiza la página.
+            notificaciones.pop();                                           //Usamos .pop() porque ya está ordenado el array.
+        }
         notificaciones.forEach(e => {
             cargarNotificacionADom(e);
         });
@@ -434,7 +435,7 @@ function reconstruirDom() {
         setTimeout(() => {
             botonNotificaciones.classList.remove("recentlyUpdated");
             botonNotificaciones.classList.add("recentlyUpdatedRemoved");
-        }, 1000);
+        }, 500);
     }
 }
 
@@ -603,44 +604,17 @@ botonPapelera.onclick = () => {
 
 let botonImportarPorVendedor = document.getElementById("botonImportarPorVendedor");
 botonImportarPorVendedor.onclick = () => {
-    console.log("iniciando importar")
-
     Swal.fire({
         title: 'Ingrese nick para importar',
         text: 'Nick del vendedor (EJ. LU4ULT_LAUTARO ). Se importarán 10 publicaciones de ese vendedor.',
         input: 'text',
         showCancelButton: true,
         confirmButtonText: 'Importar',
-        //showLoaderOnConfirm: true,
-        // preConfirm: (login) => {
-        //   return fetch(`//api.github.com/users/${login}`)
-        //     .then(response => {
-        //       if (!response.ok) {
-        //         throw new Error(response.statusText)
-        //       }
-        //       return response.json()
-        //     })
-        //     .catch(error => {
-        //       Swal.showValidationMessage(
-        //         `Request failed: ${error}`
-        //       )
-        //     })
-        // },
-        //allowOutsideClick: () => !Swal.isLoading()
-      }).then((result) => {
+        }).then((result) => {
         if (result.isConfirmed) {
-        //   Swal.fire({
-        //     title: `${result.value.login}'s avatar`,
-        //     imageUrl: result.value.avatar_url
-        //   })
-        //alert(result.value)
         importarPorVendedor(result.value.toUpperCase());
         }
       })
-    //let nickName = prompt("usuario?");
-    //importarPorVendedor(nickName.toUpperCase());
-    //importarPorVendedor('LU4ULT_LAUTARO');
-    console.log("Fin importar");
 }
 
 /**********************     MENÚ CONFIGURACIÓN DEL USUARIO ********************************************************************/
@@ -686,7 +660,22 @@ window.addEventListener('keydown', function (e) {
     if(e.key === "Enter" && document.getElementById("presupuestoInput") === document.activeElement) {
         document.getElementById("botonPresupuesto").click();
     }
+
+    if(e.key === "Escape") {
+        document.getElementById("configuracionUsuarioContenedor").classList.add("oculto");
+        document.getElementById("notificacionesContenedor").classList.add("oculto");
+    }
 });
+
+/***  MODAL  ***/
+//Si se presiona fuera del modal que se oculte notificaciones y configuración. Alternativa a volver a presionar el ícono o tecla escape.
+document.body.addEventListener('click', (e) => {
+    //console.log(e.target.nodeName)
+    if(e.target.nodeName === "MAIN" || e.target.nodeName === "HEADER") {
+        document.getElementById("configuracionUsuarioContenedor").classList.add("oculto");
+        document.getElementById("notificacionesContenedor").classList.add("oculto");
+    }
+}, true);
 
 
 /**********************     SIMULACION      ***********************************************************************************/
