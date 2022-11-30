@@ -59,7 +59,7 @@ body header .navegacion {
 }
 body header .navegacion button {
   cursor: pointer;
-  width: 50px;
+  width: 35px;
   aspect-ratio: 1;
   background-color: inherit;
   outline: none;
@@ -80,7 +80,7 @@ body header .navegacion #botonDescargarCsv:hover::after {
   position: absolute;
   top: 80px;
   right: 5px;
-  content: "Descargar CSV";
+  content: "Descargar en CSV";
 }
 body header .navegacion #botonPapelera:hover::after {
   position: absolute;
@@ -92,7 +92,7 @@ body header .navegacion #botonNotificaciones:hover::after {
   position: absolute;
   top: 80px;
   right: 5px;
-  content: "Ver Notificaciones";
+  content: "Notificaciones";
 }
 body header .navegacion #botonNotificaciones.recentlyUpdated {
   animation: shake 0.5s;
@@ -115,6 +115,12 @@ body header .navegacion #botonConfiguracion:hover::after {
   top: 80px;
   right: 5px;
   content: "Configuración";
+}
+body header .navegacion #botonImportarPorVendedor:hover::after {
+  position: absolute;
+  top: 80px;
+  right: 5px;
+  content: "Importar de Vendedor";
 }
 body header .navegacion ::after {
   background-color: #666666;
@@ -473,6 +479,10 @@ body footer a {
   }
   body header .logo img {
     width: 90px;
+    aspect-ratio: 1;
+  }
+  body header .navegacion button {
+    width: 45px;
     aspect-ratio: 1;
   }
   .notificacionesContenedor, .configuracionUsuarioContenedor {
