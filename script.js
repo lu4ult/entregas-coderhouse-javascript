@@ -703,6 +703,31 @@ function simulacion() {
 }
 
 
+//Read File
+ function leerArchivo() {
+    document.getElementById("inputFile").click();
+ }
+
+document.getElementById('inputFile').addEventListener('change', function() {
+    let fr=new FileReader();
+    fr.onload=function(){
+        notificacionesPausadasMomentaneamente = true;
+        let datosLeidos = fr.result.split("\r\n");
+        datosLeidos.forEach(e => {
+            console.log("e:" + e);
+            productos.push(new Producto(e,"Esperar...",0,false,new Date()));
+        });
+        reconstruirDom();
+    }
+    fr.readAsText(this.files[0]);
+})
+
+
+// let inputBusqueda = document.getElementById("inputBusqueda");
+
+// inputBusqueda.addEventListener("onchange", () => {
+//     console.log(inputBusqueda.value)
+// })
 /******************************************************************************************************************************/
 console.clear();
 console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
