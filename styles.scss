@@ -187,13 +187,24 @@ body {
                 }
             }
 
+            #botonImportarDesdeArchivo {
+                &:hover {
+                    &::after {
+                        position: absolute;
+                        top: 80px;
+                        right: 5px;
+                        content: "Importar desde archivo";
+                    }
+                }
+            }
+
             #botonImportarPorVendedor {
                 &:hover {
                     &::after {
                         position: absolute;
                         top: 80px;
                         right: 5px;
-                        content: "Importar de Vendedor";
+                        content: "Importar por Nick de Vendedor";
                     }
                 }
             }

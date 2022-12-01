@@ -116,11 +116,17 @@ body header .navegacion #botonConfiguracion:hover::after {
   right: 5px;
   content: "Configuración";
 }
+body header .navegacion #botonImportarDesdeArchivo:hover::after {
+  position: absolute;
+  top: 80px;
+  right: 5px;
+  content: "Importar desde archivo";
+}
 body header .navegacion #botonImportarPorVendedor:hover::after {
   position: absolute;
   top: 80px;
   right: 5px;
-  content: "Importar de Vendedor";
+  content: "Importar por Nick de Vendedor";
 }
 body header .navegacion ::after {
   background-color: #666666;

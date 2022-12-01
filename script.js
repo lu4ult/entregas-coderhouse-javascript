@@ -201,7 +201,9 @@ function llamarApiMeli(idMeli) {
         _titulo += String(data['title']);
         let _precio = data['price'];
         let _estado = data['status']==='active'?true:false;
-        let _imgUrl = data ['pictures'][0]['secure_url'];
+
+        let _imgUrl = data['pictures'][0]['secure_url'].replace("https://http2.mlstatic.com/","");
+        _imgUrl = _imgUrl.replace(".jpg","");
 
         let objActualIndice = productos.findIndex(e => e.idMeli === idMeli);                                //Ya que recibimos el ID pero no el objeto, tenemos que encontrar el objeto en el array y capturarlo
         let objetoActual = productos[objActualIndice];
@@ -222,7 +224,9 @@ function llamarApiMeli(idMeli) {
             str += _estado?"activo":"pausado";
             str += "!";
             notificaciones.push(new Notificacion(new Date(),str));
-            botonNotificaciones.classList.add("recentlyUpdated");
+            if(!notificacionesPausadasMomentaneamente) {
+                botonNotificaciones.classList.add("recentlyUpdated");
+            }
 
             setTimeout(() => {                              //Llamamos así la función para que se ejecute última, y muestre todo bien actualizado, sino algunas variables pueden quedar mal ya que trabajamos todo asincrono.
                 reconstruirDom();
@@ -361,7 +365,7 @@ function cargarProductoADom(objRecibido) {
             <span class="fecha">${obtenerFechaFormateada(objRecibido.fecha)}</span>
             <a class="titulo" id="${objRecibido.idMeli}-title" target="_blank" href="https://articulo.mercadolibre.com.ar/${objRecibido.idMeli}">${objRecibido.titulo}</a>
             <div class="img-container">
-            <img src="${objRecibido.imgUrl}" id="${objRecibido.idMeli}-img">
+            <img src="https://http2.mlstatic.com/${objRecibido.imgUrl}.jpg" alt="${objRecibido.titulo}" id="${objRecibido.idMeli}-img">
             </div>
             <span class="precio" id="${objRecibido.idMeli}-price">${objRecibido.precio}</span>
         </div>
@@ -762,3 +766,13 @@ setInterval(() => {
         setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(100+Math.random()*500))
     });
 },1*60*1000);
+
+
+/*
+productos.forEach(e => {
+    let urlParcial = e.imgUrl.replace("https://http2.mlstatic.com/","");
+    urlParcial = urlParcial.replace(".jpg","");
+    console.log(e.imgUrl);
+    console.log(urlParcial);
+})
+*/
