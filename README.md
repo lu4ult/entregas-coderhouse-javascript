@@ -1,7 +1,9 @@
-# entregas-coderhouse-javascript
+## Proyecto Final Javascript CoderHouse
+# Tenes stock?
+## <a href="https://dulcet-palmier-1fc819.netlify.app/" target="_blank">Ver Online!</a>
 
-<a href="https://lu4ult.github.io/entregas-coderhouse-javascript/" target="_blank">Ver Online en github pages!</a>
 
+Pre-entregas anteriores:
 Tercera pre-entrega
 - [x] Acceso y modificación del DOM
 - [x] localStorage y JSON
