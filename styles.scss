@@ -219,54 +219,95 @@ body {
 
     main {
         grid-area: main;
-        padding: 100px 0;
+        padding: 10px 0;
         @include centrarConFlex(1);
 
-        .agregarProductos, .presupuesto, .simulacion {
-            width: 80%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 1rem;
+        .inputBusqueda {
+            width: 50%;
+            height: 2rem;
+            font-size: 1rem;
             padding: 1rem;
-            input {
-                font-family: inherit;
-                font-size: 1rem;
-                width: 100%;
-                text-align: center;
-                background-color: inherit;
-                padding: 0.5rem;
-                border: 1px solid #ccc;
-                border-bottom: 1px solid blue;
-                &.input-error {
-                    background-color: red;
-                    color: white;
+            text-align: center;
+            background-color: inherit;
+            border: none;
+            outline: none;
+            border: 2px solid $gris;
+            position: absolute;
+            top: 100px;
+            &:focus {
+                z-index: 200;
+                background-color: $azul;
+                position: fixed;
+            }
+        }
+
+        .detalles {
+            margin-top: 50px;
+            @include centrarConFlex(1);
+            width: 90%;
+            align-items: baseline;
+            details {
+                padding: 0.25rem;
+                margin: 0.25rem;
+                font-size: 1.2rem;
+            }
+        }
+
+        .usuario {
+            margin: 20px 0;
+            width: 90%;
+            height: 200px;
+            @include centrarConFlex(0);
+            .agregarProductos, .presupuesto, .simulacion {
+                width: 30%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin: 1rem;
+                padding: 1rem;
+                background-color: rgba(0,0,0,0.1);
+                border-radius: 20px;
+
+                input {
+                    font-family: inherit;
                     font-size: 1rem;
-                    font-weight: 600;
+                    width: 100%;
+                    text-align: center;
+                    background-color: $fondo;
+                    //color: $gris;
+                    padding: 0.5rem;
+                    border: 1px solid #ccc;
+                    border-bottom: 1px solid blue;
+                    &.input-error {
+                        background-color: red;
+                        color: white;
+                        font-size: 1rem;
+                        font-weight: 600;
+                    }
+
+                    &.input-success {
+                        background-color: green;
+                        color: white;
+                        font-size: 1rem;
+                        font-weight: 600;
+                    }
                 }
 
-                &.input-success {
+                button {
+                    font-family: inherit;
+                    cursor: pointer;
+                    border: 2px solid green;
+                    border-radius: 5px;
                     background-color: green;
-                    color: white;
+                    color: #ebebeb;
                     font-size: 1rem;
-                    font-weight: 600;
+                    margin: 0.5rem;
+                    padding: 0.5rem;
+                    width: 200px;
                 }
             }
-
-            button {
-                font-family: inherit;
-                cursor: pointer;
-                border: 2px solid green;
-                border-radius: 5px;
-                background-color: green;
-                color: #ebebeb;
-                font-size: 1rem;
-                margin: 0.5rem;
-                padding: 0.5rem;
-                width: 200px;
-            }
-
         }
 
         .productos {
@@ -347,7 +388,6 @@ body {
                         width: 100%;
                         max-height: 170px;
                         img {
-                           //z-index: 10;
                             width: 100%;
                             height: 100%;
                             object-fit: scale-down;
