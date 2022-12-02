@@ -33,7 +33,7 @@ class Notificacion {
 
 class userConfig {
     constructor(notificPopUp,notificAudio, notificEmail,email,listOrder) {
-        this.notificPopUp = notificPopUp;                                                                      //Como identificador del producto usaremos directamente el identificador de la publicación que nos da Mercadolibre.
+        this.notificPopUp = notificPopUp;                                                                   //Como identificador del producto usaremos directamente el identificador de la publicación que nos da Mercadolibre.
         this.notificAudio = notificAudio;
         this.notificEmail = notificEmail;
         this.email = email;
@@ -94,29 +94,16 @@ notificacionesLeidasLocal.forEach(e => {
     notificaciones.push(new Notificacion(new Date(e.fecha),e.descripcion));
 });
 
-let userConfigAsJson = JSON.parse(localStorage.getItem("tenes-stock_configuracion-usuario"));
-configuracionUsuario = new userConfig(userConfigAsJson['notificPopUp'],userConfigAsJson['notificAudio'],userConfigAsJson['notificEmail'],userConfigAsJson['email'],userConfigAsJson['listOrder']);
+let userConfigLocal = JSON.parse(localStorage.getItem("tenes-stock_configuracion-usuario"));
+configuracionUsuario = new userConfig(userConfigLocal['notificPopUp'],userConfigLocal['notificAudio'],userConfigLocal['notificEmail'],userConfigLocal['email'],userConfigLocal['listOrder']);
 
 
 /**********************     FUNCIONES GENERALES      ***********************************************************************************/
 
 /*Dado un objeto fecha retornamos un string en formato dd/mm/aaaa para simplificar la lectura.*/
 function obtenerFechaFormateada(fecha) {
-    //return fecha.getDate()+"/"+(fecha.getMonth() +1)+"/"+fecha.getFullYear();
     return fecha.getDate()+"/"+(fecha.getMonth() +1)+"/"+fecha.getFullYear() + " - "+fecha.getHours()+":"+(fecha.getMinutes()<10?"0":"")+fecha.getMinutes()+":"+ (fecha.getSeconds()<10?"0":"") + fecha.getSeconds();
 }
-
-// function buscarProductosPorNombre() {
-//     let tituloBuscado = prompt("Ingrese el nombre del producto a buscar:");
-//     let encontrados = productos.filter(el => el.titulo.includes(tituloBuscado));
-//     if(encontrados.length >= 1) {
-//         console.log("Encontrados:");
-//         mostrarProductos(encontrados,true);
-//     }
-//     else
-//         console.log("Ups! No encontré nada...")
-// }
-
 
 
 let urlInput = document.getElementById("urlInput");
@@ -131,17 +118,15 @@ botonAgregarProductos.addEventListener("click", agregarProductos);
 function agregarProductos() {
     let user = urlInput.value;
     user = user.toUpperCase();                                  //Por si escriben el ID.
-    //user = "MLA-1117926574";
     urlInput.value = "";
     const inicioId = user.indexOf("MLA") +3;                    //+3 por el "MLA"
     console.log("Inicio: " + inicioId);
 
     let meliIdEncontrado = "";
 
-
     //Ya que el codigo meli puede iniciar con "MLA" o con "MLA-", y su largo es variable pero son sólo números,
     //recorremos el string de la url desde la posición de URL y concatenamos los caracteres mientras que sean números,
-    //Lo hacemos con un for desde 0 (desde el inicio del substring) hasta 15 (como una exageración de un código muy largo pero son de 14 o 15).
+    //Lo hacemos con un for desde 0 (desde el inicio del substring) hasta 15 (como una exageración de un código muy largo pero son de 10 o 11).
 
     for(let i=0;i<=15;i++) {
         let caracter = "";
@@ -149,10 +134,7 @@ function agregarProductos() {
         if(!isNaN(parseInt(caracter))) {
             meliIdEncontrado += caracter;
         }
-        console.log(caracter + "-" + parseInt(caracter));
     }
-
-    console.log("Id hallado: " + meliIdEncontrado)
 
     if(inicioId < 0 || inicioId === 2) {
         urlInput.value = "Ups! Algo salió mal..."
@@ -170,7 +152,7 @@ function agregarProductos() {
         let yaSeEncuentra = productos.find( e => e.idMeli == ("MLA-" + meliIdEncontrado));
         console.log("ya se encuentra: " + yaSeEncuentra);
         if(yaSeEncuentra !== undefined) {
-            setTimeout(() => {                                                          //Si no lo ejecutamos así (cargandolo al stack con tiempo 0), por alguna razón el Swal entra siempre en el .then y el modal desaparece instantáneamente.
+            setTimeout(() => {                                                                              //Si no lo ejecutamos así (cargandolo al stack con tiempo 0), por alguna razón el Swal entra siempre en el .then y el modal desaparece instantáneamente.
                 Swal.fire({
                     icon: 'error',
                     title: 'Ups!',
@@ -193,8 +175,8 @@ function llamarApiMeli(idMeli) {
     if(notificacionesPausadasMomentaneamente) {
         setTimeout(() => {notificacionesPausadasMomentaneamente = false;},20*1000)
     }
-    if(primeraCarga === true) {                                                                 //La primera vez que se carga la página que actualice todo sin importar qué.
-        primeraCarga =! primeraCarga;                                                           //De esta forma garantizamos compatibilidad hacia atrás, por ejemplo cuando se modificó cómo se guardaban las URLs de las imágenes.
+    if(primeraCarga === true) {                                                                             //La primera vez que se carga la página que actualice todo sin importar qué.
+        primeraCarga =! primeraCarga;                                                                       //De esta forma garantizamos compatibilidad hacia atrás, por ejemplo cuando se modificó cómo se guardaban las URLs de las imágenes.
         setTimeout(() => {
             reconstruirDom();
         },500);
@@ -225,19 +207,16 @@ function llamarApiMeli(idMeli) {
         if(_estado !== objetoActual.estado) {
             if(debugEnabled) console.log("Cambio de estado: " + objetoActual.titulo);
 
-            objetoActual.update();                                              //Actualiza la fecha del objeto, ya que la fecha indica la última modificación.
+            objetoActual.update();                                                                          //Actualiza la fecha del objeto, ya que la fecha indica la última modificación y así aparece primero si se selecciona ordenar por fecha.
 
-            //TODO: ver cómo refactorizar
-            let str = _titulo;
-            str += " está ahora ";
-            str += _estado?"activo":"pausado";
-            str += "!";
-            notificaciones.push(new Notificacion(new Date(),str));
+            let mensaje = `${_titulo} está ahora ${_estado?"activo":"pausado"} !`;
+
+            notificaciones.push(new Notificacion(new Date(),mensaje));
             if(!notificacionesPausadasMomentaneamente) {
                 botonNotificaciones.classList.add("recentlyUpdated");
             }
 
-            setTimeout(() => {                              //Llamamos así la función para que se ejecute última, y muestre todo bien actualizado, sino algunas variables pueden quedar mal ya que trabajamos todo asincrono.
+            setTimeout(() => {                                                                              //Llamamos así la función para que se ejecute última, y muestre todo bien actualizado, sino algunas variables pueden quedar mal ya que trabajamos todo asincrono.
                 reconstruirDom();
             },50);
 
@@ -245,28 +224,25 @@ function llamarApiMeli(idMeli) {
             if(configuracionUsuario.notificPopUp && !notificacionesPausadasMomentaneamente) {
                 setTimeout(() => {
                     Toastify({
-                        text: str,
+                        text: mensaje,
                         duration: 3000,
-                        //destination: "https://github.com/apvarun/toastify-js",
-                        //newWindow: true,
                         close: true,
-                        gravity: "top", // `top` or `bottom`
-                        position: "right", // `left`, `center` or `right`
-                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        gravity: "top",
+                        position: "right",
+                        stopOnFocus: true,
                         style: {
                           background: _estado?"linear-gradient(to right, #00b09b, #96c93d)":"linear-gradient(to right, tomato, gold)",
                         },
                         offset: {
-                            x: 0, // horizontal axis - can be a number or a string indicating unity. eg: '2em'
-                            y: "100px" // vertical axis - can be a number or a string indicating unity. eg: '2em'
+                            x: 0,
+                            y: "100px"
                           },
-                        //onClick: function(){} // Callback after click
                       }).showToast();
                 },Math.floor(Math.random()*300));
             }
 
             if(configuracionUsuario.notificAudio && !notificacionesPausadasMomentaneamente) {
-                let mensajeEnAudio = str.replace("-"," ");
+                let mensajeEnAudio = mensaje.replace("-"," ");
                 mensajeEnAudio = mensajeEnAudio.replace("/"," ");
 
                 let utterance = new SpeechSynthesisUtterance(mensajeEnAudio);
@@ -282,14 +258,12 @@ function llamarApiMeli(idMeli) {
                 }, function(error) {
                     console.log('Email fallo...', error);
                 });
-
             }
         }
         objetoActual.estado = _estado;
     })
     .catch(error => {
         console.log("Error: " + error);
-        //alert("Algo salió mal con el producto "+idMeli+", por favor eliminelo manualmente.");
         Swal.fire({
             title: 'Error!',
             text: "Algo salió mal con el producto "+idMeli+", seleccione si desea eliminar el producto o cancelar.",
@@ -306,19 +280,10 @@ function llamarApiMeli(idMeli) {
     })
 }
 
-//Esto lo hice así manualmente porque el "findIndex" no hubo forma de hacerlo funcionar.
-function findManual(id) {
-    for(let i = 0; i<=productos.length;i++) {
-        if(productos[i].idMeli === id)
-            return i;
-    }
-    return -1;
-}
+//Recibe el "ID" que se desea borrar y debemos encontrarlo en el array de productos ya que se puede haber ordenado de varias maneras según la configuración del usuario.
+function borrarProducto(idABorrar) {
+    let indiceProductoBuscado = productos.findIndex(e => e.idMeli === idABorrar);
 
-function borrarProducto(_id) {
-    //let indiceProductoBuscado = productos.findIndex(e => {e.idMeli == _id})
-    let indiceProductoBuscado = findManual(_id);
-    //console.log("Indice encontrado: " + indiceProductoBuscado)
     notificaciones.push(new Notificacion(new Date(),"["+productos[indiceProductoBuscado].idMeli+"] " + productos[indiceProductoBuscado].titulo + " eliminado."));
     botonNotificaciones.classList.add("recentlyUpdated");
 
@@ -332,24 +297,18 @@ function borrarProducto(_id) {
     }
 
     reconstruirDom();
-
-    //console.log("Papelera: ")
-    //console.log(papelera);
 }
 
-//TODO: chequear que todos los setTimeout sean realmente necesarios
-
+//Para las notificaciones no es necesario ubicar la notificación ya que siempre están ordenadas por fecha.
 function borrarNotificacion(indice) {
     notificaciones.splice(indice,1);
     document.getElementById("notificacionesContenedor").innerHTML = "";
     notificaciones.forEach(e => {cargarNotificacionADom(e);});
 
-    // if(notificaciones.length === 0) {
-    //     document.getElementById("notificacionesContenedor").innerHTML ="<strong>Sin Notificaciones</strong>"
-    // }
     reconstruirDom();
 }
 
+//Estas funciones reciben un objeto (notificacion y producto) y lo "concatenan" al DOM, de manera que se pueden recorrer los arrays con for of o .forEach.
 function cargarNotificacionADom(objRecibido) {
     let notificacionesContenedor = document.getElementById("notificacionesContenedor");
     notificacionesContenedor.innerHTML += `
@@ -388,6 +347,7 @@ function cargarProductoADom(objRecibido) {
 }
 
 
+
 function reconstruirDom() {
     if(debugEnabled) console.log("Reconstruyendo DOM");
 
@@ -419,8 +379,8 @@ function reconstruirDom() {
         document.getElementById("notificacionesContenedor").innerHTML ="<strong>Sin Notificaciones</strong>"
     }
     else {
-        while(notificaciones.length >20) {                                  //Limitamos la cantidad de notificaciones ya que si son muchas se ralentiza la página.
-            notificaciones.pop();                                           //Usamos .pop() porque ya está ordenado el array.
+        while(notificaciones.length >20) {                                                                  //Limitamos la cantidad de notificaciones ya que si son muchas se ralentiza la página.
+            notificaciones.pop();                                                                           //Usamos .pop() porque ya está ordenado el array.
         }
         notificaciones.forEach(e => {
             cargarNotificacionADom(e);
@@ -442,8 +402,7 @@ function reconstruirDom() {
     botonesSeleccionOrden[configuracionUsuario.listOrder].disabled=true;
 
 
-    //Agregamos al stack las tareas de quitar y agregar las clases de las notificaciones sólo si corresponde.
-    let notificacionEjecutada = document.querySelectorAll(".recentlyUpdated");
+    let notificacionEjecutada = document.querySelectorAll(".recentlyUpdated");                              //Agregamos al stack las tareas de quitar y agregar las clases de las notificaciones sólo si corresponde.
     if(notificacionEjecutada.length) {
         setTimeout(() => {
             botonNotificaciones.classList.remove("recentlyUpdated");
@@ -474,8 +433,7 @@ function presupuesto() {
         return;
     }
 
-    console.log(presupuestoUsuario + "$")
-    productos.sort((a,b) => a.precio - b.precio);               //Ordenamos el array por precio
+    productos.sort((a,b) => a.precio - b.precio);                                                           //Necesitamos el array ordenado. No importa la elección del usuario ya que luego se reordena dentro de reconstruirDom().
     console.log(productos[0].precio);
 
     /*
@@ -487,7 +445,7 @@ function presupuesto() {
     */
 
     //Escenario 1:
-    if(presupuestoUsuario < productos[0].precio) {                                                  //Comparamos contra el primer elemento del array ya que ya se ordenó.
+    if(presupuestoUsuario < productos[0].precio) {                                                          //Comparamos contra el primer elemento del array porque está ordenado.
         document.getElementById("productosContenedor").innerHTML = "";
         cargarProductoADom(productos[0]);
         inputPresupuesto.classList.add("input-error");
@@ -495,7 +453,7 @@ function presupuesto() {
     }
     else {
         //Escenario 2:
-        let sumatoriaTotal = 0;                                                                     //Calculamos el costo del carrito entero.
+        let sumatoriaTotal = 0;                                                                             //Calculamos el costo del carrito entero.
         for(let el of productos) {
             sumatoriaTotal += el.precio;
         }
@@ -507,27 +465,26 @@ function presupuesto() {
 
         //Escenario 3;
         else {
-            document.getElementById("productosContenedor").innerHTML = "";          //Eliminamos los productos para mostrar sólo los que alcanza el presupuesto.
+            document.getElementById("productosContenedor").innerHTML = "";                                  //Eliminamos los productos para mostrar sólo los que alcanza el presupuesto.
             let indice = 0;
             let costoParcialCarrito = 0;
 
-            do {                                                                                    //Hacemos un do-while en lugar de while ya que alcana para almenos el primer producto (escenario 1).
+            do {                                                                                            //Hacemos un do-while en lugar de while ya que alcanza para almenos el primer producto (escenario 1).
                 costoParcialCarrito += productos[indice].precio;
-                //console.log("costo carrito: "+costoParcialCarrito);
-                //mensajeParaUsuario += ", "+productos[indice].titulo;
-                //productosSegunPresupuesto.push(productos[indice]);
                 cargarProductoADom(productos[indice]);
-                //console.log(productosSegunPresupuesto);
                 indice++;
-            }while((costoParcialCarrito + productos[indice].precio) <= presupuestoUsuario);         //Mientras que el costo del carrito sumado al siguiente producto sea menor al presupuesto.
+            }while((costoParcialCarrito + productos[indice].precio) <= presupuestoUsuario);                 //Mientras que el costo del carrito sumado al siguiente producto sea menor al presupuesto.
+
             inputPresupuesto.classList.add("input-success")
-            //inputPresupuesto.value = "Su presupuesto alcanza para: " + mensajeParaUsuario + " Y sobran " + (presupuestoUsuario - costoParcialCarrito) + " $";
-            //inputPresupuesto.value = "Su presupuesto alcanza sólo para los siguientes productos y sobran " + (presupuestoUsuario - costoParcialCarrito) + "$";
             inputPresupuesto.value = "Su presupuesto alcanza sólo para:";
         }
     }
 }
 
+
+//La API MeLi tiene un endpoint que nos devuelve datos del vendedor entre ellos las publicaciones activas.
+//Importante: el nick está asociado a un ID de vendedor, pero el endpoint de productos nos devuelve el ID y no el nick.
+//A futuro: TODO: agregar a cada publicación el link al vendedor; lo cuál requerirá trabajo para asociar el ID y el nick.
 function importarPorVendedor(nickName) {
     notificacionesPausadasMomentaneamente = true;
 
@@ -535,21 +492,21 @@ function importarPorVendedor(nickName) {
     .then(response => response.json())
     .then(data => {
         let sellerProds = data['results'];
-        if(sellerProds.length) {
-            for(let i = 0;i<10 && i<sellerProds.length;i++) {
-                let _id = sellerProds[i].id.replace("MLA","MLA-");
-                let yaCargado = productos.findIndex(e => e.idMeli === _id);
-                if(yaCargado === -1) {                                                                                      //Verificamos que el producto no se encuentre cargado actualmente.
-                    productos.push(new Producto(_id,"Espere...",0,false,new Date(),""));
-                }
-            }
-        }
-        else {
+        if(sellerProds.length === 0) {
             Swal.fire({
                 icon: 'error',
                 title: 'Ups!',
                 text: 'Algo salió mal... quizás el Nick esté mal?',
             });
+            return;
+        }
+
+        for(let i = 0;i<10 && i<sellerProds.length;i++) {
+            let _id = sellerProds[i].id.replace("MLA","MLA-");
+            let yaCargado = productos.findIndex(e => e.idMeli === _id);
+            if(yaCargado === -1) {                                                                      //Verificamos que el producto no se encuentre cargado actualmente.
+                productos.push(new Producto(_id,"Espere...",0,false,new Date(),""));
+            }
         }
     });
     reconstruirDom();
@@ -557,7 +514,7 @@ function importarPorVendedor(nickName) {
 
 
 
-/**********************     NAVEGACIÓN      ***********************************************************************************/
+/**********************     NAVEGACIÓN / ÍCONOS HEADER     ***********************************************************************************/
 let botonGeneradorRandom = document.getElementById("botonGeneradorRandom");
 botonGeneradorRandom.onclick = () => {
     localStorage.clear("tenes-stock_productos");
@@ -580,31 +537,28 @@ botonConfiguracion.onclick = () => {
 let botonDescargarCsv = document.getElementById("botonDescargarCsv");
 botonDescargarCsv.onclick = () => {
 
-    //Para poder descargar un archivo como CSV básicamente creamos una matriz bidimensional y luego se codifica y descarga con un <a>
-     let textosDeNotas = [["id","titulo","precio","estado","fecha"]];
-    //let textosDeNotas = [];
+    let textosDeNotas = [["id","titulo","precio","estado","fecha"]];                                    //Para poder descargar un archivo como CSV básicamente creamos una matriz bidimensional y luego se codifica y descarga con un <a>
     for(let el of productos) {
         let nuevoArray = [el.idMeli,el.titulo,el.precio,el.estado?"ACTIVO":"INACTIVO",obtenerFechaFormateada(el.fecha)];
         textosDeNotas.push(nuevoArray);
     }
 
-    let csvContent = "data:text/csv;charset=utf-8,";                            //https://stackoverflow.com/questions/14964035
+    let csvContent = "data:text/csv;charset=utf-8,";                                                    //https://stackoverflow.com/questions/14964035
     textosDeNotas.forEach(function(rowArray) {
-        let row = rowArray.join(",");                                           //Transformamos esa matriz bidimensional en algo tipo CSV
+        let row = rowArray.join(",");                                                                   //Transformamos esa matriz bidimensional en algo tipo CSV
         csvContent += row + "\r\n";
     });
 
     let encodedUri = encodeURI(csvContent);
     let anchorDescarga = document.getElementById("anchorDescargar");
-    anchorDescarga.setAttribute("href", encodedUri);                            //Para poder descargar el archivo creado hay que "adjuntarlo" a un anchor, el cuál no está visible en el DOM.
+    anchorDescarga.setAttribute("href", encodedUri);                                                    //Para poder descargar el archivo creado hay que "adjuntarlo" a un anchor, el cuál no está visible en el DOM.
     anchorDescarga.setAttribute("download", "tenes-stock_productos.csv");
-    anchorDescarga.click(); // This will download the data file named "my_data.csv".
-
+    anchorDescarga.click();
 };
 
 let botonPapelera = document.getElementById("botonPapelera");
 botonPapelera.onclick = () => {
-    productos.push(papelera.pop());                                             //Eliminamos el último objeto de la papelera y lo restauramos al array principal.
+    productos.push(papelera.pop());                                                                     //Eliminamos el último objeto de la papelera y lo restauramos al array principal.
     reconstruirDom();
     if(papelera.length === 0) {
         botonPapelera.classList.add("oculto");
@@ -621,7 +575,7 @@ botonImportarPorVendedor.onclick = () => {
         confirmButtonText: 'Importar',
         }).then((result) => {
         if (result.isConfirmed) {
-        importarPorVendedor(result.value.toUpperCase());
+            importarPorVendedor(result.value.toUpperCase());
         }
       })
 }
@@ -654,7 +608,7 @@ document.getElementById('inputFile').addEventListener('change', function() {
 
         datosLeidos.forEach(e => {
             let yaCargado = productos.findIndex(f => f.idMeli === e);
-            if(yaCargado === -1 && e.length > 8) {                                                                                      //Verificamos que el producto no se encuentre cargado actualmente.
+            if(yaCargado === -1 && e.length > 8) {                                                      //Verificamos que el producto no se encuentre cargado actualmente.
                 productos.push(new Producto(e,"Espere...",0,false,new Date(),""));
                 contadorProductosImportados++;
             }
@@ -671,9 +625,6 @@ document.getElementById('inputFile').addEventListener('change', function() {
 let inputBusqueda = document.getElementById("inputBusqueda");
 inputBusqueda.onfocus = () => {
     inputBusqueda.value = "";
-}
-inputBusqueda.onchange = () => {
-    console.log(inputBusqueda.value);
 }
 
 /**********************     MENÚ CONFIGURACIÓN DEL USUARIO ********************************************************************/
@@ -729,32 +680,29 @@ window.addEventListener('keydown', function (e) {
     }
 });
 
-//Utilizamos keyUp y no keyDown para el input de busqueda porque sino "me como" el último caracter
-window.addEventListener('keyup', function (e) {
+window.addEventListener('keyup', function (e) {                                                         //Utilizamos keyUp y no keyDown para el input de busqueda porque sino "me como" el último caracter
     if(document.getElementById("inputBusqueda") === document.activeElement) {
         let arrayProductosEncontrados = [];
         let textoActual = document.getElementById("inputBusqueda").value.toLowerCase();
-        productos.forEach(e => {
+        /* productos.forEach(e => {
             if(e.titulo.toLowerCase().indexOf(textoActual) >=0)
                 arrayProductosEncontrados.push(e);
-        });
+        }); */
+       //Refactor:
+        arrayProductosEncontrados = productos.filter(el => el.titulo.toLowerCase().includes(textoActual));
+
         document.getElementById("productosContenedor").innerHTML = "";
         arrayProductosEncontrados.forEach(e => cargarProductoADom(e));
-
     }
-
 });
 
 /***  MODAL  ***/
-//Si se presiona fuera del modal que se oculte notificaciones y configuración. Alternativa a volver a presionar el ícono o tecla escape.
-document.body.addEventListener('click', (e) => {
-    //console.log(e.target.nodeName)
+document.body.addEventListener('click', (e) => {                                                        //Si se presiona fuera del modal que se oculte notificaciones y configuración. Alternativa a volver a presionar el ícono o tecla escape.
     if(e.target.nodeName === "MAIN" || e.target.nodeName === "HEADER") {
         document.getElementById("configuracionUsuarioContenedor").classList.add("oculto");
         document.getElementById("notificacionesContenedor").classList.add("oculto");
     }
 }, true);
-
 
 /**********************     SIMULACION      ***********************************************************************************/
 function simulacion() {
@@ -769,17 +717,14 @@ function simulacion() {
       }).then((result) => {
         if (result.isConfirmed) {
             // productos.forEach(e => {
-            //     let randomStatus = Boolean(Math.floor(Math.random()*10) %2);    //Generamos un número aleatorio entre 0 y 10, obtenemos el módulo y lo casteamos para obtener un false o true random.
+            //     let randomStatus = Boolean(Math.floor(Math.random()*10) %2);                           //Generamos un número aleatorio entre 0 y 10, obtenemos el módulo y lo casteamos para obtener un false o true random.
             //     e.estado = randomStatus;
             // });
 
             //En lugar de recorrer todos los productos y asignarles un estado aleatorio como hacíamos antes, elegimos cinco productos aleatorio y les alternamos el estado.
             //Sino las notificaciones te enloquecían cuando la cantidad de productos cargados eran muchas, digamos más de 30.
             for(let i =0; i<5;i++) {
-                console.log(i);
                 let productoRandom = Math.floor(Math.random()*productos.length);
-                console.log("Item random: " + productoRandom)
-
                 productos[productoRandom].estado =! productos[productoRandom].estado;
             }
             reconstruirDom();
@@ -788,22 +733,21 @@ function simulacion() {
 }
 
 /******************************************************************************************************************************/
+reconstruirDom();
 console.clear();
 console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
 console.log("Produccion: " + produccion);
 
-reconstruirDom();
 
-//En el primer inicio llamamos a la API ni bien carga la página para que se muestre actualizado todo.
-if(produccion) {
+if(produccion) {                                                                                         //En el primer inicio llamamos a la API ni bien carga la página para que se muestre actualizado todo.
     productos.forEach(e => {
         setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(100+Math.random()*500))
     });
 }
+debugEnabled = !produccion;
 
-//Luego vamos llamando a la API rápidamente, cada 10 segundos el primer minuto desde que cargó la página.
 let contadorLlamadasApi = 0;
-let intervaloLlamadaAPi = setInterval(() => {
+let intervaloLlamadaAPi = setInterval(() => {                                                           //Luego vamos llamando a la API rápidamente, cada 10 segundos el primer minuto desde que cargó la página.
     contadorLlamadasApi++;
 
     if(contadorLlamadasApi >= 36) {
@@ -817,9 +761,7 @@ let intervaloLlamadaAPi = setInterval(() => {
     });
 },5*1000);
 
-
-//Finalmente llamamos lento (cada 1 minuto)
-setInterval(() => {
+setInterval(() => {                                                                                     //Finalmente llamamos lento (cada 1 minuto)
     productos.forEach(e => {
         setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(100+Math.random()*500))
     });
