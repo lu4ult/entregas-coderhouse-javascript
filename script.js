@@ -1,7 +1,7 @@
 /**********************     VARIABLES GENERALES Y OBJETOS      ***********************************************************************************/
 let produccion = "https://friendly-bublanina-3c840e.netlify.app/" === window.location.href || "https://dulcet-palmier-1fc819.netlify.app/" === window.location.href;
 let configuracionUsuario;
-let debugEnabled = true;
+let debugEnabled = false;
 let notificacionesPausadasMomentaneamente=false;
 let primeraCarga = true;
 
@@ -49,7 +49,9 @@ let productosBase =[
                 new Producto("MLA-818539416","Adaptador programador esp-01",0,true, new Date(),""),
                 new Producto("MLA-1167147839","Dimmer Módulo Desarrollo",0,false, new Date(),""),
                 new Producto("MLA-918716646","Bitcoin Ticker Grande",0,true, new Date(),""),
-                new Producto("MLA-818527058","Dimmer Control Con Arduino C/cruce Por Cero",0,false, new Date(),"")
+                new Producto("MLA-926122313","Adaptador esp",0,false, new Date(),""),
+                new Producto("MLA-863258477","watchdog arduino",0,false, new Date(),""),
+                new Producto("MLA-1150649391","timbre con campana",0,false, new Date(),"")
                 ];
 
 let productos = [];
@@ -177,8 +179,6 @@ function agregarProductos() {
             return;
         }
         productos.push(new Producto("MLA-"+meliIdEncontrado,"Por favor espere actualización...",0,false,new Date()));
-        //productos.reverse();
-        //notificaciones.push(new Notificacion(new Date(),"Nuevo producto agregado!"));
         reconstruirDom();
     }
 }
@@ -373,7 +373,7 @@ function cargarProductoADom(objRecibido) {
             <span class="fecha">${obtenerFechaFormateada(objRecibido.fecha)}</span>
             <a class="titulo" id="${objRecibido.idMeli}-title" target="_blank" href="https://articulo.mercadolibre.com.ar/${objRecibido.idMeli}">${objRecibido.titulo}</a>
             <div class="img-container">
-            <img src="https://http2.mlstatic.com/${objRecibido.imgUrl}.jpg" alt="${objRecibido.titulo}" id="${objRecibido.idMeli}-img">
+            <img src="https://http2.mlstatic.com/${objRecibido.imgUrl}.jpg" alt=" imágen ${objRecibido.titulo}" id="${objRecibido.idMeli}-img">
             </div>
             <span class="precio" id="${objRecibido.idMeli}-price">${objRecibido.precio}</span>
         </div>
@@ -541,19 +541,15 @@ function importarPorVendedor(nickName) {
                 let yaCargado = productos.findIndex(e => e.idMeli === _id);
                 if(yaCargado === -1) {                                                                                      //Verificamos que el producto no se encuentre cargado actualmente.
                     productos.push(new Producto(_id,"Espere...",0,false,new Date(),""));
-                    //i--;
                 }
             }
         }
         else {
-            //setTimeout(() => {                                                          //Si no lo ejecutamos así (cargandolo al stack con tiempo 0), por alguna razón el Swal entra siempre en el .then y el modal desaparece instantáneamente.
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Ups!',
-                    text: 'Algo salió mal... quizás el Nick esté mal?',
-                  })
-              //},0);
-            //console.log("error array 0")
+            Swal.fire({
+                icon: 'error',
+                title: 'Ups!',
+                text: 'Algo salió mal... quizás el Nick esté mal?',
+            });
         }
     });
     reconstruirDom();
@@ -629,6 +625,49 @@ botonImportarPorVendedor.onclick = () => {
       })
 }
 
+let botonImportarDesdeArchivo = document.getElementById("botonImportarDesdeArchivo");
+botonImportarDesdeArchivo.onclick = () => {
+    Swal.fire({
+        title: 'Importar listado desde archivo',
+        text: 'Cargue el listado de publicaciones en un archivo de texto como se ve en la imágen.',
+        imageUrl: 'images/importFileScreenShot.png',
+        imageWidth: 400,
+        imageHeight: 300,
+        imageAlt: 'Custom image',
+        confirmButtonText: 'Seleccionar archivo',
+        showCancelButton: true,
+      })
+      .then((result) => {
+        if(result.isConfirmed) {
+            document.getElementById("inputFile").click();
+        }
+      })
+}
+
+document.getElementById('inputFile').addEventListener('change', function() {
+    let fr=new FileReader();
+    fr.onload=function(){
+        notificacionesPausadasMomentaneamente = true;
+        let datosLeidos = fr.result.split("\r\n");
+        let contadorProductosImportados = 0;
+
+        datosLeidos.forEach(e => {
+            let yaCargado = productos.findIndex(f => f.idMeli === e);
+            console.log(e.length)
+            if(yaCargado === -1 && e.length > 8) {                                                                                      //Verificamos que el producto no se encuentre cargado actualmente.
+                productos.push(new Producto(e,"Espere...",0,false,new Date(),""));
+                contadorProductosImportados++;
+            }
+        });
+
+        if(contadorProductosImportados)
+            notificaciones.push(new Notificacion(new Date(),`Importados ${contadorProductosImportados} productos!`));
+        reconstruirDom();
+    }
+    fr.readAsText(this.files[0]);
+})
+
+
 /**********************     MENÚ CONFIGURACIÓN DEL USUARIO ********************************************************************/
 
 let inputNotificPopUp = document.getElementById("notificPopUp");
@@ -702,37 +741,24 @@ function simulacion() {
         confirmButtonText: 'Si, continuar'
       }).then((result) => {
         if (result.isConfirmed) {
-            //console.log(productos[0]);
-            //productos[0].estado = false;
-            productos.forEach(e => {
-                let randomStatus = Boolean(Math.floor(Math.random()*10) %2);    //Generamos un número aleatorio entre 0 y 10, obtenemos el módulo y lo casteamos para obtener un false o true random.
-                e.estado = randomStatus;
-            });
-            //console.log(productos[0]);
+            // productos.forEach(e => {
+            //     let randomStatus = Boolean(Math.floor(Math.random()*10) %2);    //Generamos un número aleatorio entre 0 y 10, obtenemos el módulo y lo casteamos para obtener un false o true random.
+            //     e.estado = randomStatus;
+            // });
+
+            //En lugar de recorrer todos los productos y asignarles un estado aleatorio como hacíamos antes, elegimos cinco productos aleatorio y les alternamos el estado.
+            //Sino las notificaciones te enloquecían cuando la cantidad de productos cargados eran muchas, digamos más de 30.
+            for(let i =0; i<5;i++) {
+                console.log(i);
+                let productoRandom = Math.floor(Math.random()*productos.length);
+                console.log("Item random: " + productoRandom)
+
+                productos[productoRandom].estado =! productos[productoRandom].estado;
+            }
             reconstruirDom();
         }
       });
 }
-
-
-//Read File
- function leerArchivo() {
-    document.getElementById("inputFile").click();
- }
-
-document.getElementById('inputFile').addEventListener('change', function() {
-    let fr=new FileReader();
-    fr.onload=function(){
-        notificacionesPausadasMomentaneamente = true;
-        let datosLeidos = fr.result.split("\r\n");
-        datosLeidos.forEach(e => {
-            console.log("e:" + e);
-            productos.push(new Producto(e,"Esperar...",0,false,new Date()));
-        });
-        reconstruirDom();
-    }
-    fr.readAsText(this.files[0]);
-})
 
 
 // let inputBusqueda = document.getElementById("inputBusqueda");
@@ -759,13 +785,13 @@ let contadorLlamadasApi = 0;
 let intervaloLlamadaAPi = setInterval(() => {
     contadorLlamadasApi++;
 
-    if(contadorLlamadasApi >= 18) {
+    if(contadorLlamadasApi >= 36) {
         clearInterval(intervaloLlamadaAPi);
     }
     productos.forEach(e => {
         setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(Math.random()*300))
     });
-},10*1000);
+},5*1000);
 
 
 //Finalmente llamamos lento (cada 1 minuto)
