@@ -1,5 +1,6 @@
 $debug-level:0;
 
+$blanco: #fefefe;
 $fondo: #ebebeb;
 $gris: #666666;
 $azul: #99bee1;
@@ -50,9 +51,7 @@ a {
 
 body {
     display: grid;
-    //grid-template-rows: auto auto auto;
     background: $fondo;
-
     font-family: 'Roboto', sans-serif;
 
     grid-template-areas:
@@ -63,7 +62,6 @@ body {
     header {
         position: sticky;
         top: 0;
-
         z-index: 50;
 
         padding: 0.5rem;
@@ -72,12 +70,10 @@ body {
         border-bottom: 1px solid $gris;
 
         height: 120px;
-
         @include centrarConFlex(1);
         justify-content: space-between;
 
         .logo {
-            //width: 40%;
             @include centrarConFlex(0);
             gap: 1rem;
             justify-content: left;
@@ -85,7 +81,6 @@ body {
                 width: 50px;
                 aspect-ratio: 1;
             }
-
         }
 
         .navegacion {
@@ -93,7 +88,6 @@ body {
             display: flex;
             justify-content: right;
             gap: 1rem;
-            //width: 40%;
             button {
                 cursor: pointer;
                 width: 35px;
@@ -101,7 +95,6 @@ body {
                 background-color: inherit;
                 outline: none;
                 border: none;
-                //margin: 0 1rem;
                 svg {
                     width: 100%;
                     height: 100%;
@@ -233,7 +226,7 @@ body {
             outline: none;
             border: 2px solid $gris;
             position: absolute;
-            top: 100px;
+            top: 120px;
             &:focus {
                 z-index: 200;
                 background-color: $azul;
@@ -254,12 +247,11 @@ body {
         }
 
         .usuario {
-            margin: 20px 0;
+            margin: 20px 20px;
             width: 90%;
-            height: 200px;
-            @include centrarConFlex(0);
+            @include centrarConFlex(1);
             .agregarProductos, .presupuesto, .simulacion {
-                width: 30%;
+                width: 100%;
                 height: 100%;
                 display: flex;
                 flex-direction: column;
@@ -276,7 +268,6 @@ body {
                     width: 100%;
                     text-align: center;
                     background-color: $fondo;
-                    //color: $gris;
                     padding: 0.5rem;
                     border: 1px solid #ccc;
                     border-bottom: 1px solid blue;
@@ -311,7 +302,6 @@ body {
         }
 
         .productos {
-            //border: 1px solid yellow;
             width: 90%;
             @include centrarConFlex(0);
             justify-content: space-evenly;
@@ -321,14 +311,13 @@ body {
                 margin: 1rem;
                 @include centrarConFlex(1);
                 justify-content: space-between;
-                background: #fefefe;
+                background: $blanco;
                 box-shadow: 5px 5px 15px #333;
                 border: 3px solid $gris;
-                // border-radius: 30px;
                 font-size: 1.8rem;
 
                 width: 300px;
-                height: 500px;
+                height: 400px;
 
                 .superior {
                     @include centrarConFlex(0);
@@ -366,15 +355,16 @@ body {
 
                 .principal {
                     @include centrarConFlex(1);
-                    padding: 1rem 0;
+                    padding: 0.5rem 0;
                     justify-content: space-between;
                     height: 100%;
                     width: 100%;
 
                     .fecha {
-                        color: $azul;                   //TODO: acomodar por el azul correspondiente
+                        color: $azul;
                         font-size: 1.0rem;
                     }
+
                     .titulo {
                         width: 90%;
                         max-height: 90px;
@@ -385,6 +375,7 @@ body {
 
                     .img-container {
                         @include centrarConFlex(0);
+                        flex-grow: 1;
                         width: 100%;
                         max-height: 170px;
                         img {
@@ -396,9 +387,9 @@ body {
                     }
                     .precio {
                         font-size: 1.5rem;
-                    }
-                    .precio::after {
-                        content: "$";
+                        &::after {
+                            content: " $";
+                        }
                     }
                 }
 
@@ -429,7 +420,7 @@ body {
     footer {
         @include centrarConFlex(0);
         justify-content: space-around;
-        padding: 2rem;
+        padding: 0.5rem;
         background: $amarillo;
         border-top: 1px solid $gris;
 
@@ -449,14 +440,11 @@ body {
 .notificacionesContenedor, .configuracionUsuarioContenedor {
     position: fixed;
     width: 90vw;
-    //min-width: 500px;
     height: auto;
     min-height: 400px;
     max-height: 80vh;
     overflow-y: auto;
-    //overflow-x: hidden;
     z-index: 100;
-
 
     background-color: $azul;
     top: 120px;
@@ -495,13 +483,6 @@ body {
     }
 }
 
-
-// .configuracionUsuarioContenedor {
-//     border: 3px solid blue;
-//     width: 40vw;
-//     @include centrarConFlex(1);
-// }
-
 .configuracionUsuarioContenedor {
     @include centrarConFlex(1);
     justify-content: space-evenly;
@@ -512,10 +493,8 @@ body {
         width: 90%;
         @include centrarConFlex(0);
         justify-content: space-evenly;
-        //background-color: pink;
-        border-bottom: 1px solid $gris;
+         border-bottom: 1px solid $gris;
         span {
-            //background-color: greenyellow;
             width: 80%;
         }
     }
@@ -565,7 +544,6 @@ body {
 
 .oculto {
     display: none;
-    border: 5px solid red;
 }
 
 
@@ -605,9 +583,20 @@ body {
             }
         }
         main {
+            .inputBusqueda {
+                top: 100px;
+            }
 
+            .usuario {
+                @include centrarConFlex(0);
+                .agregarProductos, .presupuesto, .simulacion {
+                    width: 30%;
+                }
+            }
         }
+
         footer {
+            padding: 2rem;
 
         }
     }
@@ -624,10 +613,8 @@ body {
             .botonesOrdenContenedor {
                 button {
                     width: 100px;
-                    //aspect-ratio: 3;
                 }
             }
         }
     }
-
 }

@@ -152,7 +152,7 @@ body main .inputBusqueda {
   outline: none;
   border: 2px solid #666666;
   position: absolute;
-  top: 100px;
+  top: 120px;
 }
 body main .inputBusqueda:focus {
   z-index: 200;
@@ -174,16 +174,15 @@ body main .detalles details {
   font-size: 1.2rem;
 }
 body main .usuario {
-  margin: 20px 0;
+  margin: 20px 20px;
   width: 90%;
-  height: 200px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 body main .usuario .agregarProductos, body main .usuario .presupuesto, body main .usuario .simulacion {
-  width: 30%;
+  width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -249,7 +248,7 @@ body main .productos .productos__individual {
   border: 3px solid #666666;
   font-size: 1.8rem;
   width: 300px;
-  height: 500px;
+  height: 400px;
 }
 body main .productos .productos__individual .superior {
   display: flex;
@@ -291,7 +290,7 @@ body main .productos .productos__individual .principal {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1rem 0;
+  padding: 0.5rem 0;
   justify-content: space-between;
   height: 100%;
   width: 100%;
@@ -312,6 +311,7 @@ body main .productos .productos__individual .principal .img-container {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  flex-grow: 1;
   width: 100%;
   max-height: 170px;
 }
@@ -325,7 +325,7 @@ body main .productos .productos__individual .principal .precio {
   font-size: 1.5rem;
 }
 body main .productos .productos__individual .principal .precio::after {
-  content: "$";
+  content: " $";
 }
 body main .productos .productos__individual .abajo {
   width: 100%;
@@ -354,7 +354,7 @@ body footer {
   justify-content: center;
   align-items: center;
   justify-content: space-around;
-  padding: 2rem;
+  padding: 0.5rem;
   background: #fff159;
   border-top: 1px solid #666666;
 }
@@ -482,7 +482,6 @@ body footer a svg {
 
 .oculto {
   display: none;
-  border: 5px solid red;
 }
 
 @keyframes shake {
@@ -536,6 +535,21 @@ body footer a svg {
   body header .navegacion button {
     width: 45px;
     aspect-ratio: 1;
+  }
+  body main .inputBusqueda {
+    top: 100px;
+  }
+  body main .usuario {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+  body main .usuario .agregarProductos, body main .usuario .presupuesto, body main .usuario .simulacion {
+    width: 30%;
+  }
+  body footer {
+    padding: 2rem;
   }
   .notificacionesContenedor, .configuracionUsuarioContenedor {
     position: fixed;
