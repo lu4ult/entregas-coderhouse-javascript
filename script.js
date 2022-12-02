@@ -191,7 +191,7 @@ function llamarApiMeli(idMeli) {
     if(debugEnabled) console.log("Llamando API Meli: " + idMeliApi);
 
     if(notificacionesPausadasMomentaneamente) {
-        setTimeout(() => {notificacionesPausadasMomentaneamente = false;},5000)
+        setTimeout(() => {notificacionesPausadasMomentaneamente = false;},20*1000)
     }
     if(primeraCarga === true) {                                                                 //La primera vez que se carga la página que actualice todo sin importar qué.
         primeraCarga =! primeraCarga;                                                           //De esta forma garantizamos compatibilidad hacia atrás, por ejemplo cuando se modificó cómo se guardaban las URLs de las imágenes.
@@ -654,7 +654,6 @@ document.getElementById('inputFile').addEventListener('change', function() {
 
         datosLeidos.forEach(e => {
             let yaCargado = productos.findIndex(f => f.idMeli === e);
-            console.log(e.length)
             if(yaCargado === -1 && e.length > 8) {                                                                                      //Verificamos que el producto no se encuentre cargado actualmente.
                 productos.push(new Producto(e,"Espere...",0,false,new Date(),""));
                 contadorProductosImportados++;
@@ -825,13 +824,3 @@ setInterval(() => {
         setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(100+Math.random()*500))
     });
 },1*60*1000);
-
-
-/*
-productos.forEach(e => {
-    let urlParcial = e.imgUrl.replace("https://http2.mlstatic.com/","");
-    urlParcial = urlParcial.replace(".jpg","");
-    console.log(e.imgUrl);
-    console.log(urlParcial);
-})
-*/
