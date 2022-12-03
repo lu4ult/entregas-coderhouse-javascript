@@ -189,7 +189,8 @@ function llamarApiMeli(idMeli) {
         /* Recolección de data de la API */
         let _titulo = "";
         _titulo += String(data['title']);
-        let _precio = data['price'];
+        let _precio = parseInt(data['price']);
+        //let _precio = data['price'];
         let _estado = data['status']==='active'?true:false;
 
         let _imgUrl = data['pictures'][0]['secure_url'].replace("https://http2.mlstatic.com/","");
@@ -200,18 +201,18 @@ function llamarApiMeli(idMeli) {
         let objetoActual = productos[objActualIndice];
 
 
-        if(_precio != objetoActual.precio && objetoActual.precio) {
+        if(_precio != objetoActual.precio && objetoActual.precio && !notificacionesPausadasMomentaneamente) {
             let diferenciaPorcentual = 0;
             let _mensajeNotificacion = ""
 
-            if(_precio > objetoActual.precio) {
-                diferenciaPorcentual = Math.abs(parseInt(100*(1 - objetoActual.precio/_precio)));
-               _mensajeNotificacion = `${_titulo} aumentó un ${diferenciaPorcentual} %`;
+            if(_precio < objetoActual.precio) {
+                diferenciaPorcentual = Math.abs(parseInt(100*(1 - _precio/objetoActual.precio)));
+                _mensajeNotificacion = `${_titulo} bajó un ${diferenciaPorcentual} %`;
             }
 
             else {
-                diferenciaPorcentual = Math.abs(parseInt(100*(1 - _precio/objetoActual.precio)));
-                _mensajeNotificacion = `${_titulo} bajó un ${diferenciaPorcentual} %`;
+                diferenciaPorcentual = Math.abs(parseInt(100*(1 - objetoActual.precio/_precio)));
+                _mensajeNotificacion = `${_titulo} aumentó un ${diferenciaPorcentual} %`;
             }
 
             notificaciones.push(new Notificacion(new Date(),_mensajeNotificacion));
@@ -544,6 +545,11 @@ function importarPorVendedor(nickName) {
 }
 
 
+function borrarTodos() {
+    productos = [];
+    reconstruirDom();
+}
+
 
 /**********************     NAVEGACIÓN / ÍCONOS HEADER     ***********************************************************************************/
 let botonGeneradorRandom = document.getElementById("botonGeneradorRandom");
@@ -755,6 +761,8 @@ function simulacion() {
             //En lugar de recorrer todos los productos y asignarles un estado aleatorio como hacíamos antes, elegimos cinco productos aleatorio y les alternamos el estado.
             //Sino las notificaciones te enloquecían cuando la cantidad de productos cargados eran muchas, digamos más de 30.
             productos.at(0).precio = parseInt(productos.at(0).precio*Math.random());
+            productos.at(-1).precio = parseInt(productos.at(-1).precio*(Math.random() +1));
+
             // for(let i =0; i<5;i++) {
             //     let productoRandom = Math.floor(Math.random()*productos.length);
             //     productos[productoRandom].estado =! productos[productoRandom].estado;
