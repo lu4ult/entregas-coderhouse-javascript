@@ -170,7 +170,7 @@ function agregarProductos() {
 //TODO: analizar status code del HTTP con un producto inválido, lo que ahora resolvimos con el swal
 function llamarApiMeli(idMeli) {
     let idMeliApi = idMeli.replace("-","");
-    if(debugEnabled) console.log("Llamando API Meli: " + idMeliApi);
+    //if(debugEnabled) console.log("Llamando API Meli: " + idMeliApi);
 
     if(notificacionesPausadasMomentaneamente) {
         setTimeout(() => {notificacionesPausadasMomentaneamente = false;},20*1000)
@@ -199,10 +199,38 @@ function llamarApiMeli(idMeli) {
         let objActualIndice = productos.findIndex(e => e.idMeli === idMeli);                                //Ya que recibimos el ID pero no el objeto, tenemos que encontrar el objeto en el array y capturarlo
         let objetoActual = productos[objActualIndice];
 
-        objetoActual.titulo = _titulo;
-        objetoActual.precio = _precio;
-        objetoActual.imgUrl = _imgUrl;
-        //Ahora si comparamos entre el estado actual del objeto y la respuesta de la API.
+
+        if(_precio != objetoActual.precio && objetoActual.precio) {
+            let diferenciaPorcentual = 0;
+            let _mensajeNotificacion = ""
+
+            if(_precio > objetoActual.precio) {
+                diferenciaPorcentual = Math.abs(parseInt(100*(1 - objetoActual.precio/_precio)));
+               _mensajeNotificacion = `${_titulo} aumentó un ${diferenciaPorcentual} %`;
+            }
+
+            else {
+                diferenciaPorcentual = Math.abs(parseInt(100*(1 - _precio/objetoActual.precio)));
+                _mensajeNotificacion = `${_titulo} bajó un ${diferenciaPorcentual} %`;
+            }
+
+            notificaciones.push(new Notificacion(new Date(),_mensajeNotificacion));
+            if(!notificacionesPausadasMomentaneamente) {
+                botonNotificaciones.classList.add("recentlyUpdated");
+            }
+            if(configuracionUsuario.notificAudio && !notificacionesPausadasMomentaneamente) {
+                let mensajeEnAudio = _mensajeNotificacion.replace("-"," ");
+                mensajeEnAudio = mensajeEnAudio.replace("/"," ");
+
+                let utterance = new SpeechSynthesisUtterance(mensajeEnAudio);
+                utterance.pitch = 1.5;
+                window.speechSynthesis.speak(utterance);
+            }
+
+            setTimeout(() => {                                                                              //Llamamos así la función para que se ejecute última, y muestre todo bien actualizado, sino algunas variables pueden quedar mal ya que trabajamos todo asincrono.
+                reconstruirDom();
+            },50);
+        }
 
         if(_estado !== objetoActual.estado) {
             if(debugEnabled) console.log("Cambio de estado: " + objetoActual.titulo);
@@ -261,6 +289,9 @@ function llamarApiMeli(idMeli) {
             }
         }
         objetoActual.estado = _estado;
+        objetoActual.titulo = _titulo;
+        objetoActual.precio = _precio;
+        objetoActual.imgUrl = _imgUrl;
     })
     .catch(error => {
         console.log("Error: " + error);
@@ -723,10 +754,11 @@ function simulacion() {
 
             //En lugar de recorrer todos los productos y asignarles un estado aleatorio como hacíamos antes, elegimos cinco productos aleatorio y les alternamos el estado.
             //Sino las notificaciones te enloquecían cuando la cantidad de productos cargados eran muchas, digamos más de 30.
-            for(let i =0; i<5;i++) {
-                let productoRandom = Math.floor(Math.random()*productos.length);
-                productos[productoRandom].estado =! productos[productoRandom].estado;
-            }
+            productos.at(0).precio = parseInt(productos.at(0).precio*Math.random());
+            // for(let i =0; i<5;i++) {
+            //     let productoRandom = Math.floor(Math.random()*productos.length);
+            //     productos[productoRandom].estado =! productos[productoRandom].estado;
+            // }
             reconstruirDom();
         }
       });
