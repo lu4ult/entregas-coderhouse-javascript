@@ -424,6 +424,10 @@ function reconstruirDom() {
             productos.sort((a,b) => a.precio - b.precio);
             break;
         }
+        case 3: {
+            productos.sort((a,b) => a.estado - b.estado);
+            break;
+        }
     }
 
     productos.forEach(e => {
