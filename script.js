@@ -184,6 +184,19 @@ function llamarApiMeli(idMeli) {
     .then(response => response.json())
     .then(data => {
 
+
+        let terminosVentas = data['sale_terms'];
+        let _tiempoElaboracion = 0;
+        terminosVentas.forEach(el => {
+            //console.log(el);
+            if(el['id'] === 'MANUFACTURING_TIME') {
+                _tiempoElaboracion = el['value_name'];
+                //console.log("Tiempo elaboracion: " + _tiempoElaboracion)
+            }
+        });
+
+        //console.log(tiempoElaboracion);
+
         /* Recolección de data de la API */
         let _titulo = "";
         _titulo += String(data['title']);
