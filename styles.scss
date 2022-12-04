@@ -62,7 +62,7 @@ body {
     header {
         position: sticky;
         top: 0;
-        z-index: 50;
+        z-index: 10;
 
         padding: 0.5rem;
         grid-area: header;
@@ -228,7 +228,7 @@ body {
             position: absolute;
             top: 120px;
             &:focus {
-                z-index: 200;
+                //z-index: 200;
                 background-color: $azul;
                 position: fixed;
             }
@@ -414,6 +414,15 @@ body {
                     }
                 }
             }
+        }
+
+        .modalBase {
+            position: fixed;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.1);
+            z-index: 50;
         }
     }
 

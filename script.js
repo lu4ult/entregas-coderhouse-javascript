@@ -200,11 +200,15 @@ function llamarApiMeli(idMeli) {
         let objetoActual = productos[objActualIndice];
 
 
+
+        //TODO: estos dos IFs se pueden refactorizar en uno solo. Quedó así porque originalmente se notificaba sólo cambio de estado y luego se agregó cambio de precio.
         if(_precio != objetoActual.precio && objetoActual.precio && !notificacionesPausadasMomentaneamente) {
             let diferenciaPorcentual = 0;
+            let esAumento = true;
             let _mensajeNotificacion = ""
 
             if(_precio < objetoActual.precio) {
+                esAumento = false;
                 diferenciaPorcentual = Math.abs(parseInt(100*(1 - _precio/objetoActual.precio)));
                 _mensajeNotificacion = `${_titulo} bajó un ${diferenciaPorcentual} %`;
             }
@@ -225,6 +229,26 @@ function llamarApiMeli(idMeli) {
                 let utterance = new SpeechSynthesisUtterance(mensajeEnAudio);
                 utterance.pitch = 1.5;
                 window.speechSynthesis.speak(utterance);
+            }
+
+            if(configuracionUsuario.notificPopUp && !notificacionesPausadasMomentaneamente) {
+                setTimeout(() => {
+                    Toastify({
+                        text: _mensajeNotificacion,
+                        duration: 10000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        stopOnFocus: true,
+                        style: {
+                          background: !esAumento?"linear-gradient(to right, #00b09b, #96c93d)":"linear-gradient(to right, tomato, gold)",
+                        },
+                        offset: {
+                            x: 0,
+                            y: "100px"
+                          },
+                      }).showToast();
+                },Math.floor(Math.random()*300));
             }
         }
 
@@ -554,12 +578,14 @@ let botonNotificaciones = document.getElementById("botonNotificaciones");
 botonNotificaciones.onclick = () => {
     document.getElementById("configuracionUsuarioContenedor").classList.add("oculto");
     document.getElementById("notificacionesContenedor").classList.toggle("oculto");
+    document.getElementById("modalBase").classList.remove("oculto");
 };
 
 let botonConfiguracion = document.getElementById("botonConfiguracion");
 botonConfiguracion.onclick = () => {
     document.getElementById("notificacionesContenedor").classList.add("oculto");
     document.getElementById("configuracionUsuarioContenedor").classList.toggle("oculto");
+    document.getElementById("modalBase").classList.remove("oculto");
 };
 
 
@@ -703,6 +729,7 @@ window.addEventListener('keydown', function (e) {
     if(e.key === "Escape") {
         document.getElementById("configuracionUsuarioContenedor").classList.add("oculto");
         document.getElementById("notificacionesContenedor").classList.add("oculto");
+        document.getElementById("modalBase").classList.add("oculto");
         document.getElementById("inputBusqueda").blur();                                                //Soltar focus del input sino se vuelve a filtrar
         document.getElementById("inputBusqueda").value = "Buscar por título en las publicaciones";
         reconstruirDom();
@@ -741,11 +768,14 @@ document.getElementById("inputBusqueda").onblur = () => {
 
 /***  MODAL  ***/
 document.body.addEventListener('click', (e) => {                                                        //Si se presiona fuera del modal que se oculte notificaciones y configuración. Alternativa a volver a presionar el ícono o tecla escape.
-    if(e.target.nodeName === "MAIN" || e.target.nodeName === "HEADER") {
+    console.log(e.target.className);                                                                    //Recordar: es un sandwich; el DOM z-index 0, la baseModal 50 y el modal z-index: 100
+    if(e.target.className === "modalBase") {
         document.getElementById("configuracionUsuarioContenedor").classList.add("oculto");
         document.getElementById("notificacionesContenedor").classList.add("oculto");
+        document.getElementById("modalBase").classList.add("oculto");
     }
 }, true);
+
 
 /**********************     SIMULACION      ***********************************************************************************/
 function simulacion() {
