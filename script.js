@@ -1,9 +1,7 @@
 /**********************     VARIABLES GENERALES Y OBJETOS      ***********************************************************************************/
 let produccion = "https://friendly-bublanina-3c840e.netlify.app/" === window.location.href || "https://dulcet-palmier-1fc819.netlify.app/" === window.location.href;
 let configuracionUsuario;
-let debugEnabled = false;
 let notificacionesPausadasMomentaneamente=false;
-let primeraCarga = true;
 let pausarLlamadaApi = false;
 
 let editSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.8 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"/></svg>'
@@ -169,17 +167,18 @@ function agregarProductos() {
 
 //TODO: analizar status code del HTTP con un producto inválido, lo que ahora resolvimos con el swal
 function llamarApiMeli(idMeli) {
+    clearInterval(reconstruirEnFuturo);                                                                       //Cancelamos la reconstrucción del dom si ya está en stack, para evitar que se ejecute múltiples veces cuando cargamos muchas publicaciones simultáneamente.
+    reconstruirEnFuturo = setTimeout(() => {
+        reconstruirDom();
+    },100);
+
     let idMeliApi = idMeli.replace("-","");
-    //if(debugEnabled) console.log("Llamando API Meli: " + idMeliApi);
+    if(!produccion) console.log("Llamando API Meli: " + idMeliApi);
 
     if(notificacionesPausadasMomentaneamente) {
-        setTimeout(() => {notificacionesPausadasMomentaneamente = false;},20*1000)
-    }
-    if(primeraCarga === true) {                                                                             //La primera vez que se carga la página que actualice todo sin importar qué.
-        primeraCarga =! primeraCarga;                                                                       //De esta forma garantizamos compatibilidad hacia atrás, por ejemplo cuando se modificó cómo se guardaban las URLs de las imágenes.
-        setTimeout(() => {
-            reconstruirDom();
-        },500);
+        setTimeout(() => {notificacionesPausadasMomentaneamente = false;}
+        //,productos.length*1000);
+        ,10*1000);
     }
 
     fetch('https://api.mercadolibre.com/items/'+idMeliApi)
@@ -227,27 +226,19 @@ function llamarApiMeli(idMeli) {
                 utterance.pitch = 1.5;
                 window.speechSynthesis.speak(utterance);
             }
-
-            setTimeout(() => {                                                                              //Llamamos así la función para que se ejecute última, y muestre todo bien actualizado, sino algunas variables pueden quedar mal ya que trabajamos todo asincrono.
-                reconstruirDom();
-            },50);
         }
 
         if(_estado !== objetoActual.estado) {
-            if(debugEnabled) console.log("Cambio de estado: " + objetoActual.titulo);
+            if(!produccion) console.log("Cambio de estado: " + objetoActual.titulo);
 
             objetoActual.update();                                                                          //Actualiza la fecha del objeto, ya que la fecha indica la última modificación y así aparece primero si se selecciona ordenar por fecha.
 
             let mensaje = `${_titulo} está ahora ${_estado?"activo":"pausado"} !`;
 
-            notificaciones.push(new Notificacion(new Date(),mensaje));
             if(!notificacionesPausadasMomentaneamente) {
+                notificaciones.push(new Notificacion(new Date(),mensaje));
                 botonNotificaciones.classList.add("recentlyUpdated");
             }
-
-            setTimeout(() => {                                                                              //Llamamos así la función para que se ejecute última, y muestre todo bien actualizado, sino algunas variables pueden quedar mal ya que trabajamos todo asincrono.
-                reconstruirDom();
-            },50);
 
 
             if(configuracionUsuario.notificPopUp && !notificacionesPausadasMomentaneamente) {
@@ -381,7 +372,7 @@ function cargarProductoADom(objRecibido) {
 
 
 function reconstruirDom() {
-    if(debugEnabled) console.log("Reconstruyendo DOM");
+    if(!produccion) console.log("Reconstruyendo DOM");
 
     document.getElementById("productosContenedor").innerHTML = "";
     document.getElementById("notificacionesContenedor").innerHTML = "";
@@ -457,7 +448,7 @@ inputPresupuesto.onfocus = () => {
 botonPresupuesto.addEventListener("click",presupuesto);
 function presupuesto() {
     pausarLlamadaApi = true;
-    setTimeout(() => {pausarLlamadaApi=false;},15*1000)
+    setTimeout(() => {pausarLlamadaApi=false;},15*1000);                                                    //Para evitar que se actualice el DOM y vuelva a cargar todos los productos; queremos ver lo que filtró el presupuesto.
 
     let presupuestoUsuario = inputPresupuesto.value;
     if(isNaN(presupuestoUsuario)) {
@@ -546,6 +537,7 @@ function importarPorVendedor(nickName) {
 
 
 function borrarTodos() {
+    notificaciones = [];
     productos = [];
     reconstruirDom();
 }
@@ -730,8 +722,22 @@ window.addEventListener('keyup', function (e) {                                 
 
         document.getElementById("productosContenedor").innerHTML = "";
         arrayProductosEncontrados.forEach(e => cargarProductoADom(e));
+
+        //pausarLlamadaApi = true;
+        //setTimeout(() => {pausarLlamadaApi=false;},15*1000);
+        clearInterval(periodicamente);                                                                              //Cancelamos las llamadas a la API para que no se actualice el DOM y muestre lo que encontró.
     }
 });
+
+document.getElementById("inputBusqueda").onblur = () => {
+    periodicamente = setInterval(() => {
+        productos.forEach(e => {
+            setTimeout(() => {
+                llamarApiMeli(e.idMeli);
+            },200);
+        });
+    },5*1000);
+};
 
 /***  MODAL  ***/
 document.body.addEventListener('click', (e) => {                                                        //Si se presiona fuera del modal que se oculte notificaciones y configuración. Alternativa a volver a presionar el ícono o tecla escape.
@@ -763,46 +769,76 @@ function simulacion() {
             productos.at(0).precio = parseInt(productos.at(0).precio*Math.random());
             productos.at(-1).precio = parseInt(productos.at(-1).precio*(Math.random() +1));
 
-            // for(let i =0; i<5;i++) {
-            //     let productoRandom = Math.floor(Math.random()*productos.length);
-            //     productos[productoRandom].estado =! productos[productoRandom].estado;
-            // }
+            for(let i=0; i<3; i++) {
+                let productoRandom = Math.floor(Math.random()*productos.length);
+                productos[productoRandom].estado =! productos[productoRandom].estado;
+            }
             reconstruirDom();
         }
       });
 }
 
 /******************************************************************************************************************************/
-reconstruirDom();
+//reconstruirDom();
 console.clear();
 console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
 console.log("Produccion: " + produccion);
 
 
-if(produccion) {                                                                                         //En el primer inicio llamamos a la API ni bien carga la página para que se muestre actualizado todo.
+let reconstruirEnFuturo = setTimeout(() => {
+    reconstruirDom();
+},0);
+
+
+let periodicamente = setInterval(() => {
     productos.forEach(e => {
-        setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(100+Math.random()*500))
-    });
-}
-debugEnabled = !produccion;
-
-let contadorLlamadasApi = 0;
-let intervaloLlamadaAPi = setInterval(() => {                                                           //Luego vamos llamando a la API rápidamente, cada 10 segundos el primer minuto desde que cargó la página.
-    contadorLlamadasApi++;
-
-    if(contadorLlamadasApi >= 36) {
-        clearInterval(intervaloLlamadaAPi);
-    }
-    if(pausarLlamadaApi === true)
-        return;
-
-    productos.forEach(e => {
-        setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(Math.random()*300))
+        setTimeout(() => {
+            llamarApiMeli(e.idMeli);
+        },200);
     });
 },5*1000);
 
-setInterval(() => {                                                                                     //Finalmente llamamos lento (cada 1 minuto)
-    productos.forEach(e => {
-        setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(100+Math.random()*500))
-    });
-},1*60*1000);
+/*
+if(productos.length <10) {
+    console.log("Insane Mode.");
+    let contadorLlamadas = 0;
+    setInterval(() => {
+        contadorLlamadas++;
+        if(contadorLlamadas > productos.length)
+        contadorLlamadas = 0;
+        console.log("cont: " + contadorLlamadas);
+        llamarApiMeli(productos[contadorLlamadas].idMeli);
+    },500);
+}
+
+else {
+    reconstruirDom();
+    if(produccion) {                                                                                         //En el primer inicio llamamos a la API ni bien carga la página para que se muestre actualizado todo.
+        productos.forEach(e => {
+            setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(Math.random()*250))
+        });
+    }
+
+    let contadorLlamadasApi = 0;
+    let intervaloLlamadaAPi = setInterval(() => {                                                           //Luego vamos llamando a la API rápidamente, cada 10 segundos el primer minuto desde que cargó la página.
+        contadorLlamadasApi++;
+
+        if(contadorLlamadasApi >= 36) {
+            clearInterval(intervaloLlamadaAPi);
+        }
+        if(pausarLlamadaApi === true)
+            return;
+
+        productos.forEach(e => {
+            setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(Math.random()*300))
+        });
+    },5*1000);
+
+    setInterval(() => {                                                                                     //Finalmente llamamos lento (cada 1 minuto)
+        productos.forEach(e => {
+            setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(100+Math.random()*500))
+        });
+    },1*60*1000);
+
+}
+*/
