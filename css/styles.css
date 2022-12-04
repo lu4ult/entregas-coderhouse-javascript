@@ -155,6 +155,7 @@ body main .inputBusqueda {
   top: 120px;
 }
 body main .inputBusqueda:focus {
+  z-index: 200;
   background-color: #99bee1;
   position: fixed;
 }

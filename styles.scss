@@ -228,7 +228,7 @@ body {
             position: absolute;
             top: 120px;
             &:focus {
-                //z-index: 200;
+                z-index: 200;
                 background-color: $azul;
                 position: fixed;
             }

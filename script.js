@@ -1,8 +1,8 @@
 /**********************     VARIABLES GENERALES Y OBJETOS      ***********************************************************************************/
-let produccion = "https://friendly-bublanina-3c840e.netlify.app/" === window.location.href || "https://dulcet-palmier-1fc819.netlify.app/" === window.location.href;
+let esProduccion = "https://friendly-bublanina-3c840e.netlify.app/" === window.location.href || "https://dulcet-palmier-1fc819.netlify.app/" === window.location.href;
 let configuracionUsuario;
-let notificacionesPausadasMomentaneamente=false;
-let pausarLlamadaApi = false;
+let estanPausadasNotificaciones=false;
+let estanPausadasLlamadasApi = false;
 
 let editSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.8 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"/></svg>'
 let deleteSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M175 175C184.4 165.7 199.6 165.7 208.1 175L255.1 222.1L303 175C312.4 165.7 327.6 165.7 336.1 175C346.3 184.4 346.3 199.6 336.1 208.1L289.9 255.1L336.1 303C346.3 312.4 346.3 327.6 336.1 336.1C327.6 346.3 312.4 346.3 303 336.1L255.1 289.9L208.1 336.1C199.6 346.3 184.4 346.3 175 336.1C165.7 327.6 165.7 312.4 175 303L222.1 255.1L175 208.1C165.7 199.6 165.7 184.4 175 175V175zM512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48z"/></svg>'
@@ -147,9 +147,8 @@ function agregarProductos() {
 
     if(inicioId >= 0 && inicioId !== 2 && meliIdEncontrado.length>=9) {
         //Verificamos que el producto ingresado no esté actualmente cargado; para eso lo buscamos y esperamos hallar "undefined" ya que no encuentra nada, si encontramos un objeto, alertamos con swal descartamos la entrada.
-        let yaSeEncuentra = productos.find( e => e.idMeli == ("MLA-" + meliIdEncontrado));
-        console.log("ya se encuentra: " + yaSeEncuentra);
-        if(yaSeEncuentra !== undefined) {
+        let esRepetido = productos.find( e => e.idMeli == ("MLA-" + meliIdEncontrado));
+        if(esRepetido !== undefined) {
             setTimeout(() => {                                                                              //Si no lo ejecutamos así (cargandolo al stack con tiempo 0), por alguna razón el Swal entra siempre en el .then y el modal desaparece instantáneamente.
                 Swal.fire({
                     icon: 'error',
@@ -173,10 +172,10 @@ function llamarApiMeli(idMeli) {
     },100);
 
     let idMeliApi = idMeli.replace("-","");
-    if(!produccion) console.log("Llamando API Meli: " + idMeliApi);
+    if(!esProduccion) console.log("Llamando API Meli: " + idMeliApi);
 
-    if(notificacionesPausadasMomentaneamente) {
-        setTimeout(() => {notificacionesPausadasMomentaneamente = false;}
+    if(estanPausadasNotificaciones) {
+        setTimeout(() => {estanPausadasNotificaciones = false;}
         //,productos.length*1000);
         ,10*1000);
     }
@@ -189,12 +188,10 @@ function llamarApiMeli(idMeli) {
         let _titulo = "";
         _titulo += String(data['title']);
         let _precio = parseInt(data['price']);
-        //let _precio = data['price'];
         let _estado = data['status']==='active'?true:false;
 
-        let _imgUrl = data['pictures'][0]['secure_url'].replace("https://http2.mlstatic.com/","");
+        let _imgUrl = data['pictures'][0]['secure_url'].replace("https://http2.mlstatic.com/","");          //No guardamos la URL completa a la imágen y con esto mejoró mucho el rendimiento con muchas publicaciones.
         _imgUrl = _imgUrl.replace(".jpg","");
-        //console.log(_imgUrl);
 
         let objActualIndice = productos.findIndex(e => e.idMeli === idMeli);                                //Ya que recibimos el ID pero no el objeto, tenemos que encontrar el objeto en el array y capturarlo
         let objetoActual = productos[objActualIndice];
@@ -202,7 +199,7 @@ function llamarApiMeli(idMeli) {
 
 
         //TODO: estos dos IFs se pueden refactorizar en uno solo. Quedó así porque originalmente se notificaba sólo cambio de estado y luego se agregó cambio de precio.
-        if(_precio != objetoActual.precio && objetoActual.precio && !notificacionesPausadasMomentaneamente) {
+        if(_precio != objetoActual.precio && objetoActual.precio && !estanPausadasNotificaciones) {
             let diferenciaPorcentual = 0;
             let esAumento = true;
             let _mensajeNotificacion = ""
@@ -219,10 +216,10 @@ function llamarApiMeli(idMeli) {
             }
 
             notificaciones.push(new Notificacion(new Date(),_mensajeNotificacion));
-            if(!notificacionesPausadasMomentaneamente) {
+            if(!estanPausadasNotificaciones) {
                 botonNotificaciones.classList.add("recentlyUpdated");
             }
-            if(configuracionUsuario.notificAudio && !notificacionesPausadasMomentaneamente) {
+            if(configuracionUsuario.notificAudio && !estanPausadasNotificaciones) {
                 let mensajeEnAudio = _mensajeNotificacion.replace("-"," ");
                 mensajeEnAudio = mensajeEnAudio.replace("/"," ");
 
@@ -231,11 +228,11 @@ function llamarApiMeli(idMeli) {
                 window.speechSynthesis.speak(utterance);
             }
 
-            if(configuracionUsuario.notificPopUp && !notificacionesPausadasMomentaneamente) {
+            if(configuracionUsuario.notificPopUp && !estanPausadasNotificaciones) {
                 setTimeout(() => {
                     Toastify({
                         text: _mensajeNotificacion,
-                        duration: 10000,
+                        duration: 3000,
                         close: true,
                         gravity: "top",
                         position: "right",
@@ -248,24 +245,24 @@ function llamarApiMeli(idMeli) {
                             y: "100px"
                           },
                       }).showToast();
-                },Math.floor(Math.random()*300));
+                },100);
             }
         }
 
         if(_estado !== objetoActual.estado) {
-            if(!produccion) console.log("Cambio de estado: " + objetoActual.titulo);
+            if(!esProduccion) console.log("Cambio de estado: " + objetoActual.titulo);
 
             objetoActual.update();                                                                          //Actualiza la fecha del objeto, ya que la fecha indica la última modificación y así aparece primero si se selecciona ordenar por fecha.
 
             let mensaje = `${_titulo} está ahora ${_estado?"activo":"pausado"} !`;
 
-            if(!notificacionesPausadasMomentaneamente) {
+            if(!estanPausadasNotificaciones) {
                 notificaciones.push(new Notificacion(new Date(),mensaje));
                 botonNotificaciones.classList.add("recentlyUpdated");
             }
 
 
-            if(configuracionUsuario.notificPopUp && !notificacionesPausadasMomentaneamente) {
+            if(configuracionUsuario.notificPopUp && !estanPausadasNotificaciones) {
                 setTimeout(() => {
                     Toastify({
                         text: mensaje,
@@ -282,10 +279,10 @@ function llamarApiMeli(idMeli) {
                             y: "100px"
                           },
                       }).showToast();
-                },Math.floor(Math.random()*300));
+                },100);
             }
 
-            if(configuracionUsuario.notificAudio && !notificacionesPausadasMomentaneamente) {
+            if(configuracionUsuario.notificAudio && !estanPausadasNotificaciones) {
                 let mensajeEnAudio = mensaje.replace("-"," ");
                 mensajeEnAudio = mensajeEnAudio.replace("/"," ");
 
@@ -294,7 +291,7 @@ function llamarApiMeli(idMeli) {
                 window.speechSynthesis.speak(utterance);
             }
 
-            if(configuracionUsuario.notificEmail && !notificacionesPausadasMomentaneamente) {
+            if(configuracionUsuario.notificEmail && !estanPausadasNotificaciones) {
                 console.log("enviando email");
                 emailjs.send('service_k3tj0b9', 'template_gqsipms', {destinatario:configuracionUsuario.email,producto:_titulo,estado:_estado?"activo":"pausado"})
                 .then(function(response) {
@@ -396,7 +393,7 @@ function cargarProductoADom(objRecibido) {
 
 
 function reconstruirDom() {
-    if(!produccion) console.log("Reconstruyendo DOM");
+    if(!esProduccion) console.log("Reconstruyendo DOM");
 
     document.getElementById("productosContenedor").innerHTML = "";
     document.getElementById("notificacionesContenedor").innerHTML = "";
@@ -471,8 +468,8 @@ inputPresupuesto.onfocus = () => {
 
 botonPresupuesto.addEventListener("click",presupuesto);
 function presupuesto() {
-    pausarLlamadaApi = true;
-    setTimeout(() => {pausarLlamadaApi=false;},15*1000);                                                    //Para evitar que se actualice el DOM y vuelva a cargar todos los productos; queremos ver lo que filtró el presupuesto.
+    estanPausadasLlamadasApi = true;
+    setTimeout(() => {estanPausadasLlamadasApi=false;},15*1000);                                                    //Para evitar que se actualice el DOM y vuelva a cargar todos los productos; queremos ver lo que filtró el presupuesto.
 
     let presupuestoUsuario = inputPresupuesto.value;
     if(isNaN(presupuestoUsuario)) {
@@ -533,7 +530,7 @@ function presupuesto() {
 //Importante: el nick está asociado a un ID de vendedor, pero el endpoint de productos nos devuelve el ID y no el nick.
 //A futuro: TODO: agregar a cada publicación el link al vendedor; lo cuál requerirá trabajo para asociar el ID y el nick.
 function importarPorVendedor(nickName) {
-    notificacionesPausadasMomentaneamente = true;
+    estanPausadasNotificaciones = true;
 
     fetch('https://api.mercadolibre.com/sites/MLA/search?nickname='+nickName)
     .then(response => response.json())
@@ -548,10 +545,10 @@ function importarPorVendedor(nickName) {
             return;
         }
 
-        for(let i = 0;i<10 && i<sellerProds.length;i++) {
+        for(let i = 0;i<30 && i<sellerProds.length;i++) {
             let _id = sellerProds[i].id.replace("MLA","MLA-");
-            let yaCargado = productos.findIndex(e => e.idMeli === _id);
-            if(yaCargado === -1) {                                                                      //Verificamos que el producto no se encuentre cargado actualmente.
+            let esRepetido = productos.findIndex(e => e.idMeli === _id);
+            if(esRepetido === -1) {                                                                      //Verificamos que el producto no se encuentre cargado actualmente.
                 productos.push(new Producto(_id,"Espere...",0,false,new Date(),""));
             }
         }
@@ -624,7 +621,7 @@ let botonImportarPorVendedor = document.getElementById("botonImportarPorVendedor
 botonImportarPorVendedor.onclick = () => {
     Swal.fire({
         title: 'Ingrese nick para importar',
-        text: 'Nick del vendedor (EJ. LU4ULT_LAUTARO ). Se importarán 10 publicaciones de ese vendedor.',
+        text: 'Nick del vendedor (EJ. LU4ULT_LAUTARO ). Se importarán hasta 30 publicaciones de ese vendedor.',
         input: 'text',
         showCancelButton: true,
         confirmButtonText: 'Importar',
@@ -657,13 +654,13 @@ botonImportarDesdeArchivo.onclick = () => {
 document.getElementById('inputFile').addEventListener('change', function() {
     let fr=new FileReader();
     fr.onload=function(){
-        notificacionesPausadasMomentaneamente = true;
+        estanPausadasNotificaciones = true;
         let datosLeidos = fr.result.split("\r\n");
         let contadorProductosImportados = 0;
 
         datosLeidos.forEach(e => {
-            let yaCargado = productos.findIndex(f => f.idMeli === e);
-            if(yaCargado === -1 && e.length > 8) {                                                      //Verificamos que el producto no se encuentre cargado actualmente.
+            let esRepetido = productos.findIndex(f => f.idMeli === e);
+            if(esRepetido === -1 && e.length > 8) {                                                      //Verificamos que el producto no se encuentre cargado actualmente.
                 productos.push(new Producto(e,"Espere...",0,false,new Date(),""));
                 contadorProductosImportados++;
             }
@@ -750,8 +747,8 @@ window.addEventListener('keyup', function (e) {                                 
         document.getElementById("productosContenedor").innerHTML = "";
         arrayProductosEncontrados.forEach(e => cargarProductoADom(e));
 
-        //pausarLlamadaApi = true;
-        //setTimeout(() => {pausarLlamadaApi=false;},15*1000);
+        //estanPausadasLlamadasApi = true;
+        //setTimeout(() => {estanPausadasLlamadasApi=false;},15*1000);
         clearInterval(periodicamente);                                                                              //Cancelamos las llamadas a la API para que no se actualice el DOM y muestre lo que encontró.
     }
 });
@@ -809,18 +806,12 @@ function simulacion() {
 }
 
 /******************************************************************************************************************************/
-//reconstruirDom();
 console.clear();
 console.log("%cHola!","color:blue;font-size:2.5rem;border-bottom:1px solid blue;")
-console.log("Produccion: " + produccion);
+console.log("Produccion: " + esProduccion);
 
 
-let reconstruirEnFuturo = setTimeout(() => {
-    reconstruirDom();
-},0);
-
-
-let periodicamente = setInterval(() => {
+let periodicamente = setInterval(() => {                                                                //Esta función llamara periodicamente a la API MeLi para consultar cambios en las publicaciones.
     productos.forEach(e => {
         setTimeout(() => {
             llamarApiMeli(e.idMeli);
@@ -828,47 +819,6 @@ let periodicamente = setInterval(() => {
     });
 },5*1000);
 
-/*
-if(productos.length <10) {
-    console.log("Insane Mode.");
-    let contadorLlamadas = 0;
-    setInterval(() => {
-        contadorLlamadas++;
-        if(contadorLlamadas > productos.length)
-        contadorLlamadas = 0;
-        console.log("cont: " + contadorLlamadas);
-        llamarApiMeli(productos[contadorLlamadas].idMeli);
-    },500);
-}
-
-else {
-    reconstruirDom();
-    if(produccion) {                                                                                         //En el primer inicio llamamos a la API ni bien carga la página para que se muestre actualizado todo.
-        productos.forEach(e => {
-            setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(Math.random()*250))
-        });
-    }
-
-    let contadorLlamadasApi = 0;
-    let intervaloLlamadaAPi = setInterval(() => {                                                           //Luego vamos llamando a la API rápidamente, cada 10 segundos el primer minuto desde que cargó la página.
-        contadorLlamadasApi++;
-
-        if(contadorLlamadasApi >= 36) {
-            clearInterval(intervaloLlamadaAPi);
-        }
-        if(pausarLlamadaApi === true)
-            return;
-
-        productos.forEach(e => {
-            setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(Math.random()*300))
-        });
-    },5*1000);
-
-    setInterval(() => {                                                                                     //Finalmente llamamos lento (cada 1 minuto)
-        productos.forEach(e => {
-            setTimeout(() => {llamarApiMeli(e.idMeli);},Math.floor(100+Math.random()*500))
-        });
-    },1*60*1000);
-
-}
-*/
+let reconstruirEnFuturo = setTimeout(() => {                                                            //Esta función es agregada al stack desde la función que llama a la API.
+    reconstruirDom();                                                                                   //De forma que si se modificaron muchas publicaciones simultáneamente (por ejemplo cuando se agregan por Nick o archivo),
+},0);                                                                                                   //Se va cancelando y nuevamente agregando la llamada a "reconstruirDom" para que se ejecute sólo una vez.
