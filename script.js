@@ -822,3 +822,4 @@ let periodicamente = setInterval(() => {                                        
 let reconstruirEnFuturo = setTimeout(() => {                                                            //Esta función es agregada al stack desde la función que llama a la API.
     reconstruirDom();                                                                                   //De forma que si se modificaron muchas publicaciones simultáneamente (por ejemplo cuando se agregan por Nick o archivo),
 },0);                                                                                                   //Se va cancelando y nuevamente agregando la llamada a "reconstruirDom" para que se ejecute sólo una vez.
+
