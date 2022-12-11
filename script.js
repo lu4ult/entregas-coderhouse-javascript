@@ -183,8 +183,6 @@ function llamarApiMeli(idMeli) {
     fetch('https://api.mercadolibre.com/items/'+idMeliApi)
     .then(response => response.json())
     .then(data => {
-
-
         let terminosVentas = data['sale_terms'];
         let _tiempoElaboracion = 0;
         terminosVentas.forEach(el => {
@@ -316,6 +314,8 @@ function llamarApiMeli(idMeli) {
         }
         objetoActual.estado = _estado;
         objetoActual.titulo = _titulo;
+        if(_tiempoElaboracion)
+            objetoActual.titulo = objetoActual.titulo + " - " + _tiempoElaboracion;
         objetoActual.precio = _precio;
         objetoActual.imgUrl = _imgUrl;
     })
@@ -390,7 +390,7 @@ function cargarProductoADom(objRecibido) {
             <span class="fecha">${obtenerFechaFormateada(objRecibido.fecha)}</span>
             <a class="titulo" id="${objRecibido.idMeli}-title" target="_blank" href="https://articulo.mercadolibre.com.ar/${objRecibido.idMeli}">${objRecibido.titulo}</a>
             <div class="img-container">
-            <img src="https://http2.mlstatic.com/${objRecibido.imgUrl}.jpg" alt=" imágen ${objRecibido.titulo}" id="${objRecibido.idMeli}-img">
+            <img loading="lazy" src="https://http2.mlstatic.com/${objRecibido.imgUrl}.jpg" alt=" imágen ${objRecibido.titulo}" id="${objRecibido.idMeli}-img">
             </div>
             <span class="precio" id="${objRecibido.idMeli}-price">${objRecibido.precio}</span>
         </div>
@@ -840,3 +840,8 @@ let reconstruirEnFuturo = setTimeout(() => {                                    
     reconstruirDom();                                                                                   //De forma que si se modificaron muchas publicaciones simultáneamente (por ejemplo cuando se agregan por Nick o archivo),
 },0);                                                                                                   //Se va cancelando y nuevamente agregando la llamada a "reconstruirDom" para que se ejecute sólo una vez.
 
+window.onload = () => {
+    productos.forEach(e => {
+        llamarApiMeli(e.idMeli);
+    });
+}
