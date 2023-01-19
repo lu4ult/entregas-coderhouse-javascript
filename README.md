@@ -1,6 +1,6 @@
 ## Proyecto Final Javascript CoderHouse
 # Tenes stock?
-## <a href="https://dulcet-palmier-1fc819.netlify.app/" target="_blank">Ver Online!</a>
+## <a href="https://tenesstock.netlify.app/" target="_blank">Ver Online!</a>
 
 
 Pre-entregas anteriores:
@@ -24,4 +24,4 @@ Primera pre-entrega
 - [x] armar un simulador interactivo
 
 
-<a href="https://friendly-bublanina-3c840e.netlify.app/">Ver online en Netlify (deployed from dev branch)</a>
+<a href="https://tenesstockdev.netlify.app/">Ver online en Netlify (deployed from dev branch)</a>
