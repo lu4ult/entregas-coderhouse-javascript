@@ -1,5 +1,5 @@
 /**********************     VARIABLES GENERALES Y OBJETOS      ***********************************************************************************/
-let esProduccion = "https://friendly-bublanina-3c840e.netlify.app/" === window.location.href || "https://dulcet-palmier-1fc819.netlify.app/" === window.location.href;
+let esProduccion = "https://tenesstock.netlify.app/" === window.location.href || "https://tenesstockdev.netlify.app/" === window.location.href;
 let configuracionUsuario;
 let estanPausadasNotificaciones = false;
 let estanPausadasLlamadasApi = false;
@@ -176,10 +176,6 @@ function llamarApiMeli(idMeli) {
 
     if (estanPausadasLlamadasApi)
         return;
-
-    console.log("LLAMAR API MELI")
-
-
 
     let idMeliApi = idMeli.replace("-", "");
     if (!esProduccion) console.log("Llamando API Meli: " + idMeliApi);
