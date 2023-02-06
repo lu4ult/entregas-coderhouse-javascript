@@ -219,7 +219,7 @@ function llamarApiMeli(idMeli) {
             if (_precio != objetoActual.precio && objetoActual.precio && !estanPausadasNotificaciones) {
                 let diferenciaPorcentual = 0;
                 let esAumento = true;
-                let _mensajeNotificacion = ""
+                let _mensajeNotificacion = "Hola"
 
                 if (_precio < objetoActual.precio) {
                     esAumento = false;
@@ -227,12 +227,12 @@ function llamarApiMeli(idMeli) {
                     _mensajeNotificacion = `${_titulo} bajó un ${diferenciaPorcentual} %`;
                 }
 
-                /*
+
                 else {
                     diferenciaPorcentual = Math.abs(parseInt(100 * (1 - objetoActual.precio / _precio)));
                     _mensajeNotificacion = `${_titulo} aumentó un ${diferenciaPorcentual} %`;
                 }
-                */
+
 
                 notificaciones.push(new Notificacion(new Date(), _mensajeNotificacion));
                 if (!estanPausadasNotificaciones) {
@@ -247,7 +247,7 @@ function llamarApiMeli(idMeli) {
                     window.speechSynthesis.speak(utterance);
                 }
 
-                if (configuracionUsuario.notificPopUp && !estanPausadasNotificaciones) {
+                if (configuracionUsuario.notificPopUp && !estanPausadasNotificaciones && !esAumento) {
                     setTimeout(() => {
                         Toastify({
                             text: _mensajeNotificacion,
@@ -309,7 +309,7 @@ function llamarApiMeli(idMeli) {
                     window.speechSynthesis.speak(utterance);
                 }
 
-                if (configuracionUsuario.notificEmail && !estanPausadasNotificaciones) {
+                if (configuracionUsuario.notificEmail && !estanPausadasNotificaciones && _estado) {
                     console.log("enviando email");
                     emailjs.send('service_k3tj0b9', 'template_gqsipms', { destinatario: configuracionUsuario.email, producto: _titulo, estado: _estado ? "activo" : "pausado" })
                         .then(function (response) {
