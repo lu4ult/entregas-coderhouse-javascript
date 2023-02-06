@@ -227,10 +227,12 @@ function llamarApiMeli(idMeli) {
                     _mensajeNotificacion = `${_titulo} bajó un ${diferenciaPorcentual} %`;
                 }
 
+                /*
                 else {
                     diferenciaPorcentual = Math.abs(parseInt(100 * (1 - objetoActual.precio / _precio)));
                     _mensajeNotificacion = `${_titulo} aumentó un ${diferenciaPorcentual} %`;
                 }
+                */
 
                 notificaciones.push(new Notificacion(new Date(), _mensajeNotificacion));
                 if (!estanPausadasNotificaciones) {
@@ -278,8 +280,7 @@ function llamarApiMeli(idMeli) {
                     botonNotificaciones.classList.add("recentlyUpdated");
                 }
 
-
-                if (configuracionUsuario.notificPopUp && !estanPausadasNotificaciones) {
+                if (configuracionUsuario.notificPopUp && !estanPausadasNotificaciones && _estado) {
                     setTimeout(() => {
                         Toastify({
                             text: mensaje,
@@ -299,7 +300,7 @@ function llamarApiMeli(idMeli) {
                     }, 100);
                 }
 
-                if (configuracionUsuario.notificAudio && !estanPausadasNotificaciones) {
+                if (configuracionUsuario.notificAudio && !estanPausadasNotificaciones && _estado) {
                     let mensajeEnAudio = mensaje.replace("-", " ");
                     mensajeEnAudio = mensajeEnAudio.replace("/", " ");
 
